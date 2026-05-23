@@ -72,6 +72,30 @@ export function goalFit(lineId: string, purpose: CreditPurpose | null | undefine
   return GOAL_FIT[purpose]?.[lineId] ?? 0;
 }
 
+/* --------------------------- instituições parceiras ----------------------- */
+
+export type Institution = {
+  id: string;
+  name: string; // nome completo
+  short: string; // nome curto (chips)
+  initials: string; // monograma do "logo"
+  color: string; // cor de marca (fundo do logo)
+  fg: string; // cor do texto sobre a marca
+  kind: string; // natureza regulatória
+};
+
+/** Registro de instituições financeiras parceiras. O "logo" é um monograma de
+    marca (sem assets) — basta trocar por <Image> quando houver os arquivos. */
+export const INSTITUTIONS: Record<string, Institution> = {
+  caixa: { id: "caixa", name: "Caixa Econômica Federal", short: "Caixa", initials: "CX", color: "#005CA9", fg: "#FFFFFF", kind: "Banco público federal" },
+  bb: { id: "bb", name: "Banco do Brasil", short: "BB", initials: "BB", color: "#FAE128", fg: "#003399", kind: "Banco público (aval União)" },
+  crediamigo: { id: "crediamigo", name: "CrediAmigo · Banco do Nordeste", short: "CrediAmigo", initials: "CA", color: "#E8730C", fg: "#FFFFFF", kind: "Microcrédito produtivo (PNMPO)" },
+  sicoob: { id: "sicoob", name: "Sicoob", short: "Sicoob", initials: "SI", color: "#1B9E8F", fg: "#FFFFFF", kind: "Cooperativa de crédito" },
+  bv: { id: "bv", name: "BV Financeira", short: "BV", initials: "BV", color: "#16181D", fg: "#FFE600", kind: "Financeira de varejo" },
+  cora: { id: "cora", name: "Cora SCD", short: "Cora", initials: "CO", color: "#E5337E", fg: "#FFFFFF", kind: "Fintech de crédito (SCD)" },
+  adianta: { id: "adianta", name: "Adianta Recebíveis", short: "Adianta", initials: "AD", color: "#0E8F6E", fg: "#FFFFFF", kind: "SCD de recebíveis" },
+};
+
 /* ------------------------------ catálogo ---------------------------------- */
 
 export type CreditArchetype = "recebivel" | "risco" | "gov";
@@ -80,6 +104,7 @@ export type CreditLine = {
   id: string;
   name: string;
   provider: string;
+  institutionId: string; // chave em INSTITUTIONS
   archetype: CreditArchetype;
   purpose: string;
   ticketMin: number;
@@ -98,6 +123,7 @@ export const CREDIT_LINES: CreditLine[] = [
     id: "antecipacao",
     name: "Antecipação de Recebíveis",
     provider: "SCD parceira",
+    institutionId: "adianta",
     archetype: "recebivel",
     purpose: "Antecipa seus contratos futuros e vira capital de giro",
     ticketMin: 2000,
@@ -114,6 +140,7 @@ export const CREDIT_LINES: CreditLine[] = [
     id: "pnmpo",
     name: "Microcrédito Produtivo (PNMPO)",
     provider: "Banco comunitário / SCM",
+    institutionId: "crediamigo",
     archetype: "gov",
     purpose: "Crédito orientado para microempreendedor",
     ticketMin: 1000,
@@ -130,6 +157,7 @@ export const CREDIT_LINES: CreditLine[] = [
     id: "acredita",
     name: "Acredita / Caixa",
     provider: "Programa federal (Caixa)",
+    institutionId: "caixa",
     archetype: "gov",
     purpose: "Crédito para quem está saindo da informalidade",
     ticketMin: 1000,
@@ -146,6 +174,7 @@ export const CREDIT_LINES: CreditLine[] = [
     id: "sicoob",
     name: "Capital de Giro Cooperativa",
     provider: "Cooperativa (Sicoob/Cresol)",
+    institutionId: "sicoob",
     archetype: "gov",
     purpose: "Giro e insumos para o associado",
     ticketMin: 1000,
@@ -162,6 +191,7 @@ export const CREDIT_LINES: CreditLine[] = [
     id: "insumos",
     name: "Crédito para Insumos",
     provider: "Financeira de varejo",
+    institutionId: "bv",
     archetype: "recebivel",
     purpose: "Compra parcelada de insumos e equipamentos do seu ofício",
     ticketMin: 500,
@@ -178,6 +208,7 @@ export const CREDIT_LINES: CreditLine[] = [
     id: "pronampe",
     name: "PRONAMPE",
     provider: "Banco de varejo (aval União)",
+    institutionId: "bb",
     archetype: "gov",
     purpose: "Capital de giro com garantia da União",
     ticketMin: 3000,
@@ -194,6 +225,7 @@ export const CREDIT_LINES: CreditLine[] = [
     id: "giro_fintech",
     name: "Capital de Giro Fintech",
     provider: "Fintech de crédito (SCD)",
+    institutionId: "cora",
     archetype: "risco",
     purpose: "Giro rápido, 100% digital",
     ticketMin: 2000,
@@ -207,6 +239,17 @@ export const CREDIT_LINES: CreditLine[] = [
     highlight: "Aprovação rápida pelo histórico",
   },
 ];
+
+/** Instituição financeira responsável pela linha. */
+export function institutionFor(line: CreditLine): Institution {
+  return INSTITUTIONS[line.institutionId];
+}
+
+/** Instituição a partir do id da linha (usado pelo contrato salvo). */
+export function institutionForLineId(lineId: string): Institution | undefined {
+  const l = CREDIT_LINES.find((x) => x.id === lineId);
+  return l ? INSTITUTIONS[l.institutionId] : undefined;
+}
 
 /* --------------------------- pesos por arquétipo -------------------------- */
 
