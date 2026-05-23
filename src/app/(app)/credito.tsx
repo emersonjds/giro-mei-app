@@ -14,11 +14,14 @@ import {
   contractCET,
   parcela,
   formatDateBR,
+  institutionFor,
+  institutionForLineId,
   CREDIT_LINES,
   CREDIT_PURPOSES,
   LineMatch,
   Contract,
   Installment,
+  Institution,
 } from "@/lib/credit";
 import {
   Screen,
@@ -32,6 +35,8 @@ import {
   Pill,
   Bar,
   MatchBar,
+  AiBadge,
+  InstitutionLogo,
   StatusStepper,
   InstallmentRow,
   Toast,
@@ -234,12 +239,20 @@ function Vitrine() {
         <ModalShell onClose={() => setDetailId(null)}>
           {detail ? (
             <>
-              <Text style={ls.modalTitle}>{detail.line.name}</Text>
-              <Muted>{detail.line.provider}</Muted>
+              <View style={ls.modalHead}>
+                <InstLogo inst={institutionFor(detail.line)} size={48} />
+                <View style={{ flex: 1 }}>
+                  <Text style={ls.modalTitle}>{detail.line.name}</Text>
+                  <Muted>
+                    {institutionFor(detail.line).name} · {institutionFor(detail.line).kind}
+                  </Muted>
+                </View>
+              </View>
 
               {detail.idealForGoal ? <Pill tone="success">Ideal para seu objetivo</Pill> : null}
 
               <View style={ls.matchBig}>
+                <AiBadge label="Match calculado por IA" />
                 <Text style={[ls.matchBigNum, numStyle]}>{detail.matchScore}%</Text>
                 <Muted>de match com seu perfil</Muted>
               </View>
@@ -324,11 +337,19 @@ function ConfirmContent({ m, onConfirm }: { m: LineMatch; onConfirm: () => void 
   const cet = contractCET(m.amount, m.rate, months, fee, iof);
   const pmt = parcela(m.amount, m.rate, months);
   const total = pmt * months;
+  const inst = institutionFor(m.line);
 
   return (
     <>
-      <Text style={ls.modalTitle}>Solicitar {m.line.name}</Text>
-      <Muted>{m.line.provider}</Muted>
+      <View style={ls.modalHead}>
+        <InstLogo inst={inst} size={48} />
+        <View style={{ flex: 1 }}>
+          <Text style={ls.modalTitle}>Solicitar {m.line.name}</Text>
+          <Muted>
+            {inst.name} · {inst.kind}
+          </Muted>
+        </View>
+      </View>
 
       <Card style={{ gap: 6 }}>
         <CostRow label="Valor" value={formatBRL(m.amount)} />
@@ -348,6 +369,19 @@ function ConfirmContent({ m, onConfirm }: { m: LineMatch; onConfirm: () => void 
         <CostRow label="CET (inclui taxa e IOF)" value={`${cet.aaPct.toLocaleString("pt-BR")}% a.a.`} />
         <CostRow label="Total a pagar" value={`${formatBRL(total)} (${formatBRL(pmt)}×${months})`} />
       </Card>
+
+      <CustoCompleto
+        valor={m.amount}
+        taxaAm={m.rate}
+        cetAm={cet.amPct}
+        cetAa={cet.aaPct}
+        fee={fee}
+        iof={iof}
+        recebe={m.amount - fee - iof}
+        parcelaMes={pmt}
+        months={months}
+        total={total}
+      />
 
       <Muted>O dinheiro cai na sua conta em D+1 útil após a assinatura.</Muted>
       <View style={{ flexDirection: "row" }}>
@@ -411,6 +445,12 @@ function MeuCredito({ contract }: { contract: Contract }) {
     (p) => p.status === "a_vencer" || p.status === "atrasada",
   );
 
+  // Custo completo da proposta contratada (CET fiel pela TIR do fluxo).
+  const pmt = parcela(contract.amount, contract.rate, contract.months);
+  const cet = contractCET(contract.amount, contract.rate, contract.months, contract.fee, contract.iof);
+  const totalPay = pmt * contract.months;
+  const inst = institutionForLineId(contract.lineId);
+
   function doPay() {
     if (payN == null) return;
     payInstallment(payN);
@@ -427,26 +467,33 @@ function MeuCredito({ contract }: { contract: Contract }) {
         <Title>Meu crédito</Title>
       </View>
 
-      {/* Contrato */}
+      {/* Contrato — headline */}
       <Card tone="highlight" style={{ gap: S.sm }}>
         <View style={ls.head}>
+          {inst ? <InstLogo inst={inst} /> : null}
           <View style={{ flex: 1 }}>
             <Text style={ls.name}>{contract.lineName}</Text>
-            <Muted>{contract.provider}</Muted>
+            <Muted>{inst ? inst.name : contract.provider}</Muted>
           </View>
         </View>
         <Text style={[ms.bigMoney, numStyle]}>{formatBRL(contract.amount)}</Text>
-        <CostRow
-          label="Taxa de análise + IOF"
-          value={`${formatBRL(contract.fee)} + ${formatBRL(contract.iof)}`}
-        />
         <CostRow label="Você recebe" value={formatBRL(contract.netAmount)} />
-        <CostRow label="CET" value={`${contract.cetAA.toLocaleString("pt-BR")}% a.a.`} />
-        <CostRow
-          label="Parcelas"
-          value={`${formatBRL(parcela(contract.amount, contract.rate, contract.months))} × ${contract.months}`}
-        />
+        <CostRow label="Parcelas" value={`${formatBRL(pmt)} × ${contract.months}`} />
       </Card>
+
+      {/* Custo completo — transparência plena da proposta contratada */}
+      <CustoCompleto
+        valor={contract.amount}
+        taxaAm={contract.rate}
+        cetAm={cet.amPct}
+        cetAa={cet.aaPct}
+        fee={contract.fee}
+        iof={contract.iof}
+        recebe={contract.netAmount}
+        parcelaMes={pmt}
+        months={contract.months}
+        total={totalPay}
+      />
 
       {/* Status stepper */}
       <View style={{ gap: S.sm }}>
@@ -547,12 +594,14 @@ function LineCard({
   isCheapest: boolean;
   onPrimary: () => void;
 }) {
+  const inst = institutionFor(m.line);
   return (
     <Card tone={isBest ? "highlight" : "default"} style={{ gap: S.sm }}>
       <View style={ls.head}>
+        <InstLogo inst={inst} />
         <View style={{ flex: 1 }}>
           <Text style={ls.name}>{m.line.name}</Text>
-          <Text style={ls.caption}>{m.line.provider}</Text>
+          <Text style={ls.caption}>{inst.name}</Text>
         </View>
         <View style={ls.badges}>
           {isBest ? <Pill tone="accent">Melhor para você</Pill> : null}
@@ -573,6 +622,7 @@ function LineCard({
         </View>
       </View>
 
+      <AiBadge />
       <MatchBar value={m.matchScore} />
 
       <Btn
@@ -585,12 +635,14 @@ function LineCard({
 }
 
 function LockedCard({ m, onAdd }: { m: LineMatch; onAdd: () => void }) {
+  const inst = institutionFor(m.line);
   return (
     <Card tone="locked" style={{ gap: S.sm }}>
       <View style={ls.head}>
+        <InstLogo inst={inst} />
         <View style={{ flex: 1 }}>
           <Text style={ls.name}>{m.line.name}</Text>
-          <Text style={ls.caption}>{m.line.provider}</Text>
+          <Text style={ls.caption}>{inst.name}</Text>
         </View>
         <View style={ls.lock}>
           <View style={ls.lockBody} />
@@ -609,6 +661,7 @@ function LockedCard({ m, onAdd }: { m: LineMatch; onAdd: () => void }) {
         </View>
       </View>
 
+      <AiBadge />
       <MatchBar value={m.matchScore} potential={m.matchPotential} />
       <Muted style={{ color: C.faint }}>Faltam: {m.missingDocs.map((d) => d.label).join(", ")}</Muted>
       <Muted style={{ color: C.accent }}>Com os documentos: chega a {m.matchPotential}%</Muted>
@@ -642,6 +695,56 @@ function CostRow({ label, value }: { label: string; value: string }) {
     <View style={ls.costRow}>
       <Muted style={{ flex: 1 }}>{label}</Muted>
       <Text style={[ls.costVal, numStyle]}>{value}</Text>
+    </View>
+  );
+}
+
+/** Logo de instituição a partir do registro de marca. */
+function InstLogo({ inst, size = 40 }: { inst: Institution; size?: number }) {
+  return <InstitutionLogo initials={inst.initials} color={inst.color} fg={inst.fg} size={size} />;
+}
+
+/** Quadro de custo total da operação — transparência plena (CET, taxa, IOF). */
+function CustoCompleto({
+  valor,
+  taxaAm,
+  cetAm,
+  cetAa,
+  fee,
+  iof,
+  recebe,
+  parcelaMes,
+  months,
+  total,
+}: {
+  valor: number;
+  taxaAm: number;
+  cetAm: number;
+  cetAa: number;
+  fee: number;
+  iof: number;
+  recebe: number;
+  parcelaMes: number;
+  months: number;
+  total: number;
+}) {
+  return (
+    <View style={{ gap: S.sm }}>
+      <Label>Custo completo</Label>
+      <Card style={{ gap: 6 }}>
+        <CostRow label="Valor solicitado" value={formatBRL(valor)} />
+        <CostRow label="Taxa a.m." value={`${taxaAm.toLocaleString("pt-BR")}%`} />
+        <CostRow label="CET a.m." value={`${cetAm.toLocaleString("pt-BR")}%`} />
+        <CostRow label="CET a.a." value={`${cetAa.toLocaleString("pt-BR")}%`} />
+        <CostRow label="Taxa de análise" value={formatBRL(fee)} />
+        <CostRow label="IOF" value={formatBRL(iof)} />
+        <CostRow label="Você recebe (líquido)" value={formatBRL(recebe)} />
+        <CostRow label="Parcela" value={`${formatBRL(parcelaMes)}/mês × ${months}`} />
+        <View style={ls.totalRow}>
+          <Muted style={{ flex: 1, color: C.text, fontWeight: "800" }}>Total a pagar</Muted>
+          <Text style={[ls.costVal, { fontSize: 15 }, numStyle]}>{formatBRL(total)}</Text>
+        </View>
+      </Card>
     </View>
   );
 }
@@ -715,12 +818,22 @@ const ls = StyleSheet.create({
   modalCloseTxt: { color: C.muted, fontSize: 14, fontWeight: "700" },
   modalScroll: { gap: S.md, paddingTop: S.md, paddingBottom: S.lg },
   modalTitle: { color: C.text, fontSize: 22, fontWeight: "900", letterSpacing: -0.3 },
-  matchBig: { alignItems: "center", gap: 2, paddingVertical: S.sm },
-  matchBigNum: { color: C.accent, fontSize: 56, fontWeight: "900", letterSpacing: -2 },
+  matchBig: { alignItems: "center", gap: 6, paddingVertical: S.sm },
+  matchBigNum: { color: C.ai, fontSize: 56, fontWeight: "900", letterSpacing: -2 },
   facLabel: { color: C.text, fontSize: 14, fontWeight: "700", flex: 1 },
   facPct: { color: C.text, fontSize: 14, fontWeight: "900", fontVariant: ["tabular-nums"] },
   costRow: { flexDirection: "row", alignItems: "center", gap: S.sm },
   costVal: { color: C.text, fontSize: 14, fontWeight: "800", fontVariant: ["tabular-nums"] },
+  totalRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: S.sm,
+    marginTop: 2,
+    paddingTop: S.sm,
+    borderTopWidth: 1,
+    borderTopColor: C.border,
+  },
+  modalHead: { flexDirection: "row", alignItems: "center", gap: S.sm },
   feeHighlight: {
     flexDirection: "row",
     alignItems: "center",
