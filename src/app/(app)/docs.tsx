@@ -35,7 +35,7 @@ export default function DocsScreen() {
         if (!uploaded.includes(id)) toggleDoc(id);
       }
     } catch {
-      // silencioso na demo
+      // ignora cancelamento/erro do seletor
     }
   }
 
@@ -102,7 +102,6 @@ export default function DocsScreen() {
         </View>
       ))}
 
-      {/* Por que esses documentos importam */}
       <View style={{ gap: S.sm }}>
         <Label>Por que esses documentos importam</Label>
         {impacts

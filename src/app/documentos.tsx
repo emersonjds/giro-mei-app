@@ -31,7 +31,7 @@ export default function DocumentosScreen() {
         if (!uploaded.includes(id)) toggleDoc(id);
       }
     } catch {
-      // silencioso na demo
+      // ignora cancelamento/erro do seletor
     }
   }
 
@@ -112,7 +112,6 @@ export default function DocumentosScreen() {
 
 const ds = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: S.md },
-  // selo "Enviado" flutuando em cima do card
   marker: {
     position: "absolute",
     top: -10,

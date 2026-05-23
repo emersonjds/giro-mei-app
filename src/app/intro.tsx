@@ -66,7 +66,6 @@ export default function IntroScreen() {
       <Card style={{ borderColor: C.white }}>
         <Muted style={{ fontWeight: "700", color: C.text }}>O cenário desta demo</Muted>
 
-        {/* Campo editável de profissão */}
         <View style={{ gap: S.xs }}>
           <Label>SUA PROFISSÃO</Label>
           <TextInput
@@ -79,7 +78,6 @@ export default function IntroScreen() {
           <Muted>Funciona para qualquer profissão — nesta demo, focamos em trancistas.</Muted>
         </View>
 
-        {/* Chips de sugestão */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -102,7 +100,6 @@ export default function IntroScreen() {
           })}
         </ScrollView>
 
-        {/* Avatar + texto do cenário */}
         <View style={st.scenarioRow}>
           <View
             style={st.avatar}

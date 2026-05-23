@@ -83,7 +83,6 @@ function Vitrine() {
   }
   const unlockedCount = ranked.filter((m) => m.status === "best" || m.status === "unlocked").length;
 
-  // Modais
   const [detailId, setDetailId] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [unlockId, setUnlockId] = useState<string | null>(null);
@@ -141,7 +140,6 @@ function Vitrine() {
         </Body>
       </View>
 
-      {/* Filtro de objetivo */}
       {purposeMeta ? (
         <View style={ls.filterRow}>
           <Pressable onPress={toggleGoalFilter} hitSlop={6}>
@@ -159,7 +157,6 @@ function Vitrine() {
         </View>
       ) : null}
 
-      {/* Para você agora */}
       {forYou.length ? (
         <View style={{ gap: S.sm }}>
           <Label>Para você agora</Label>
@@ -182,7 +179,6 @@ function Vitrine() {
         </View>
       ) : null}
 
-      {/* Desbloqueie com documentos */}
       {locked.length ? (
         <View style={{ gap: S.sm }}>
           <Label>Desbloqueie com documentos</Label>
@@ -195,7 +191,6 @@ function Vitrine() {
         </View>
       ) : null}
 
-      {/* Para o futuro */}
       {future.length ? (
         <View style={{ gap: S.sm }}>
           <Label>Para o futuro</Label>
@@ -213,7 +208,6 @@ function Vitrine() {
         </View>
       ) : null}
 
-      {/* Por que os documentos importam */}
       <View style={{ gap: S.sm }}>
         <Label>Por que esses documentos importam</Label>
         {impacts
@@ -467,7 +461,6 @@ function MeuCredito({ contract }: { contract: Contract }) {
         <Title>Meu crédito</Title>
       </View>
 
-      {/* Contrato — headline */}
       <Card tone="highlight" style={{ gap: S.sm }}>
         <View style={ls.head}>
           {inst ? <InstLogo inst={inst} /> : null}
@@ -481,7 +474,6 @@ function MeuCredito({ contract }: { contract: Contract }) {
         <CostRow label="Parcelas" value={`${formatBRL(pmt)} × ${contract.months}`} />
       </Card>
 
-      {/* Custo completo — transparência plena da proposta contratada */}
       <CustoCompleto
         valor={contract.amount}
         taxaAm={contract.rate}
@@ -495,7 +487,6 @@ function MeuCredito({ contract }: { contract: Contract }) {
         total={totalPay}
       />
 
-      {/* Status stepper */}
       <View style={{ gap: S.sm }}>
         <Label>Acompanhamento</Label>
         <Card>
@@ -503,7 +494,6 @@ function MeuCredito({ contract }: { contract: Contract }) {
         </Card>
       </View>
 
-      {/* Ações de avanço (demo) */}
       {contract.status === "em_analise" ? (
         <Btn label="Aprovar (simular)" variant="accent" onPress={approveCredit} />
       ) : null}
@@ -522,7 +512,6 @@ function MeuCredito({ contract }: { contract: Contract }) {
         </Card>
       ) : null}
 
-      {/* Parcelas */}
       {contract.installments.length ? (
         <>
           {nextInstallment ? (
@@ -785,7 +774,6 @@ const ls = StyleSheet.create({
   },
   filterPillOn: { borderColor: C.accent, backgroundColor: C.accentSoft },
   filterTxt: { color: C.text, fontSize: 13, fontWeight: "700" },
-  // cadeado
   lock: { width: 22, height: 24, alignItems: "center", justifyContent: "flex-end" },
   lockBody: { width: 18, height: 13, borderRadius: 3, backgroundColor: C.faint },
   lockShackle: {
@@ -799,7 +787,6 @@ const ls = StyleSheet.create({
     borderBottomWidth: 0,
     borderColor: C.faint,
   },
-  // modal
   modalOverlay: { flex: 1, justifyContent: "flex-end" },
   modalBackdrop: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(0,0,0,0.6)" },
   modalSheet: {

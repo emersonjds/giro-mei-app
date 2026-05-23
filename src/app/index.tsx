@@ -12,7 +12,6 @@ export default function LoginScreen() {
 
   return (
     <Screen>
-      {/* Hero / marca */}
       <View style={ls.hero}>
         <View style={ls.brandRow}>
           <View style={ls.mark}>
@@ -29,7 +28,6 @@ export default function LoginScreen() {
         </Body>
       </View>
 
-      {/* CTA principal */}
       <View style={{ gap: S.sm }}>
         <Btn label="Criar minha conta grátis" onPress={enter} />
 
@@ -56,14 +54,12 @@ export default function LoginScreen() {
         />
       </View>
 
-      {/* Já tem conta */}
       <Pressable onPress={enter} hitSlop={8} style={ls.signin}>
         <Muted>
           Já tem conta? <Text style={ls.signinLink}>Entrar</Text>
         </Muted>
       </Pressable>
 
-      {/* Rodapé */}
       <View style={{ gap: S.xs, marginTop: "auto" }}>
         <Muted style={{ textAlign: "center", fontSize: 11 }}>
           Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade (LGPD).

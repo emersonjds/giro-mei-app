@@ -32,7 +32,6 @@ export default function ObrasScreen() {
         </Body>
       </View>
 
-      {/* Resumo */}
       <View style={{ flexDirection: "row", gap: S.md }}>
         <Card style={{ flex: 1 }}>
           <Muted>Agenda total</Muted>
@@ -46,7 +45,6 @@ export default function ObrasScreen() {
         </Card>
       </View>
 
-      {/* Lista de trabalhos */}
       <View style={{ gap: S.sm }}>
         <Muted style={{ fontWeight: "700", color: C.text }}>Trabalhos na agenda</Muted>
         {persona.obras.map((o) => (

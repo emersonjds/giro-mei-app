@@ -59,7 +59,6 @@ export default function ObjetivoScreen() {
         </Body>
       </View>
 
-      {/* Grid 2 colunas de objetivos */}
       <View style={os.grid}>
         {CREDIT_PURPOSES.map((p) => {
           const selected = purpose === p.id;
@@ -81,7 +80,6 @@ export default function ObjetivoScreen() {
         })}
       </View>
 
-      {/* Seletor de valor */}
       <View style={{ gap: S.sm }}>
         <Label>Quanto você precisa?</Label>
         <Card style={{ gap: S.md }}>

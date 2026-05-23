@@ -108,7 +108,6 @@ export default function CnpjScreen() {
         </Card>
       )}
 
-      {/* Ações */}
       {!found && phase === "idle" && (
         <Btn label="Criar meu MEI" onPress={startCreate} />
       )}

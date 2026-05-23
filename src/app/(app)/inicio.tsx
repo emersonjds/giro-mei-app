@@ -101,7 +101,6 @@ export default function InicioScreen() {
         </View>
       </View>
 
-      {/* Crédito */}
       {contract ? (
         <Card tone="highlight" style={{ gap: S.md }}>
           <View style={hs.cardHead}>
@@ -132,7 +131,6 @@ export default function InicioScreen() {
         </Card>
       )}
 
-      {/* Objetivo */}
       <View style={{ gap: S.sm }}>
         <Label>Seu objetivo</Label>
         <Card style={{ gap: S.sm }}>
@@ -153,7 +151,6 @@ export default function InicioScreen() {
         </Card>
       </View>
 
-      {/* Próximas entradas */}
       <View style={{ gap: S.sm }}>
         <View style={hs.cardHead}>
           <Label>Próximas entradas</Label>
@@ -174,7 +171,6 @@ export default function InicioScreen() {
         </Card>
       </View>
 
-      {/* Documentos */}
       <View style={{ gap: S.sm }}>
         <View style={hs.cardHead}>
           <Label>Documentos</Label>

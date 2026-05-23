@@ -23,7 +23,6 @@ export default function ScoreScreen() {
         <Body>Calculado a partir da formalização, dos documentos e da sua agenda de trabalhos — e totalmente explicável.</Body>
       </View>
 
-      {/* Score */}
       <Card style={{ alignItems: "center", gap: S.md, paddingVertical: S.lg }}>
         <Muted>SEU SCORE</Muted>
         <Text style={ss.score}>{result.score}</Text>
@@ -37,7 +36,6 @@ export default function ScoreScreen() {
         </View>
       </Card>
 
-      {/* Crédito pré-aprovado */}
       <Card style={{ borderColor: C.white, gap: S.sm }}>
         <Muted style={{ fontWeight: "700", color: C.text }}>Crédito pré-aprovado</Muted>
         <Text style={ss.credit}>{formatBRL(credit.amount)}</Text>
@@ -48,7 +46,6 @@ export default function ScoreScreen() {
         </Muted>
       </Card>
 
-      {/* Raio-X */}
       <View style={{ gap: S.sm }}>
         <Muted style={{ fontWeight: "700", color: C.text }}>Raio-X do score — sem caixa-preta</Muted>
         {result.factors.map((f) => (

@@ -462,7 +462,6 @@ const st = StyleSheet.create({
   matchFill: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: C.ai },
   matchNum: { color: C.ai, fontSize: 14, fontWeight: "900", fontVariant: ["tabular-nums"], minWidth: 36, textAlign: "right" },
   matchNumPot: { color: C.aiDeep, fontWeight: "800" },
-  // AiBadge
   aiBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -477,7 +476,6 @@ const st = StyleSheet.create({
   },
   aiSpark: { color: C.ai, fontSize: 12, fontWeight: "900" },
   aiBadgeTxt: { color: C.aiDeep, fontSize: 11, fontWeight: "800", letterSpacing: 0.2 },
-  // InstitutionLogo
   instLogo: { alignItems: "center", justifyContent: "center" },
   instLogoTxt: { fontWeight: "900", letterSpacing: -0.5 },
   toastWrap: { position: "absolute", top: 0, left: 0, right: 0, alignItems: "center", paddingTop: S.lg, zIndex: 50 },
@@ -489,7 +487,6 @@ const st = StyleSheet.create({
   btnAccent: { backgroundColor: C.accent },
   btnTxt: { fontSize: 16, fontWeight: "800" },
   numLarge: { fontVariant: ["tabular-nums"] },
-  // StatusStepper
   stepperWrap: { gap: 0 },
   stepperRow: { flexDirection: "row", gap: S.md },
   stepperGutter: { width: 24, alignItems: "center" },
@@ -511,7 +508,6 @@ const st = StyleSheet.create({
   stepperBody: { flex: 1, paddingBottom: S.md, paddingTop: 1 },
   stepperLabel: { color: C.text, fontSize: 14, fontWeight: "700" },
   stepperDate: { color: C.faint, fontSize: 12, fontWeight: "600", marginTop: 1 },
-  // InstallmentRow
   instRow: { flexDirection: "row", alignItems: "center", gap: S.md, minHeight: 44, paddingVertical: 4 },
   instBadge: {
     width: 26,
@@ -526,7 +522,6 @@ const st = StyleSheet.create({
   instDue: { color: C.muted, fontSize: 12 },
   instAmount: { color: C.text, fontSize: 14, fontWeight: "800", fontVariant: ["tabular-nums"] },
   instStatus: { fontSize: 11, fontWeight: "800" },
-  // AmountStepper
   stepperCtrl: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: S.md },
   stepperBtn: {
     width: 48,

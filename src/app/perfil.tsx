@@ -41,7 +41,6 @@ export default function PerfilScreen() {
         <Title>Meu perfil</Title>
       </View>
 
-      {/* Dados */}
       <Card style={{ gap: S.sm }}>
         <Text style={ps.name}>{persona.name}</Text>
         <Muted>{persona.trade} · {persona.location}</Muted>
@@ -62,7 +61,6 @@ export default function PerfilScreen() {
         ) : null}
       </Card>
 
-      {/* Parceiros */}
       <View style={{ gap: S.sm }}>
         <Label>Parceiros</Label>
         <Card style={{ gap: S.sm }}>
@@ -78,7 +76,6 @@ export default function PerfilScreen() {
         </Card>
       </View>
 
-      {/* LGPD */}
       <View style={{ gap: S.sm }}>
         <Label>Seus dados (LGPD)</Label>
         <Card style={{ gap: S.md }}>
