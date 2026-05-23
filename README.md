@@ -1,56 +1,91 @@
-# Welcome to your Expo app 👋
+# Giro MEI
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Capital de giro para quem o banco não enxerga.**
 
-## Get started
+Giro MEI é um app que ajuda microempreendedores informais a saírem da
+informalidade, montarem um histórico e destravarem crédito justo. A ideia
+central: a **agenda de trabalhos futuros** vira garantia — esses recebíveis
+projetados entram no sistema bancário como lastro para uma oferta de crédito.
 
-1. Install dependencies
+A demo usa como persona a **Dona Keila, trancista** em Grajaú (SP). Todos os
+dados são simulados (mock), sem integrações externas reais.
 
-   ```bash
-   npm install
-   ```
+## Como funciona
 
-2. Start the app
+1. **Entrada** — login social/telefone (demo: qualquer opção entra direto).
+2. **Onboarding** — explicação da proposta.
+3. **CPF** — validação real do dígito verificador.
+4. **CNPJ** — consulta simulada CPF → CNPJ; se não houver, abre a criação do MEI.
+5. **Agenda de trabalhos** — os contratos futuros que servem de garantia.
+6. **Objetivo do crédito** — para que o dinheiro será usado.
+7. **Documentos** — contas, extrato e documentos fiscais que reforçam o score.
+8. **Score** — pontuação 300–1000 calculada a partir da agenda, formalização,
+   contas em dia, movimentação bancária e tempo de ofício.
+9. **Área logada** (abas): Início, Crédito (vitrine de linhas com análise de
+   match), Entradas e Documentos.
 
-   ```bash
-   npx expo start
-   ```
+## Stack
 
-In the output, you'll find options to open the app in a
+- [Expo](https://expo.dev) SDK 56 + [Expo Router](https://docs.expo.dev/router/introduction) (rotas por arquivo)
+- React Native 0.85 / React 19
+- TypeScript (strict)
+- React Native Reanimated + Gesture Handler
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Pré-requisitos
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- [Node.js](https://nodejs.org) 20 ou superior
+- [pnpm](https://pnpm.io) 10 (`npm install -g pnpm`)
+- App **Expo Go** no celular ([Android](https://play.google.com/store/apps/details?id=host.exp.exponent) / [iOS](https://apps.apple.com/app/expo-go/id982107779))
 
-## Get a fresh project
-
-When you're ready, run:
+## Como rodar
 
 ```bash
-npm run reset-project
+# 1. Instale as dependências
+pnpm install
+
+# 2. Inicie o servidor de desenvolvimento
+pnpm start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+O terminal vai exibir um **QR Code**. Para abrir no celular:
 
-### Other setup steps
+- **Android** — abra o app **Expo Go** e toque em *Scan QR code*.
+- **iOS** — aponte a **câmera** nativa para o QR e toque na notificação.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+> O celular e o computador precisam estar na **mesma rede Wi‑Fi**. Em redes que
+> bloqueiam conexões locais, rode com túnel: `pnpm start --tunnel`.
 
-## Learn more
+### Outras formas de abrir
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+pnpm android   # abre no emulador/dispositivo Android
+pnpm ios       # abre no simulador iOS (requer Xcode no macOS)
+pnpm web       # abre no navegador
+pnpm lint      # roda o ESLint
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Estrutura
 
-## Join the community
+```
+src/
+├── app/                 # rotas (Expo Router)
+│   ├── index.tsx        # login
+│   ├── intro.tsx        # onboarding
+│   ├── cpf.tsx          # CPF
+│   ├── cnpj.tsx         # consulta/criação de CNPJ (MEI)
+│   ├── obras.tsx        # agenda de trabalhos
+│   ├── objetivo.tsx     # objetivo do crédito
+│   ├── documentos.tsx   # envio de documentos
+│   ├── score.tsx        # score de crédito
+│   ├── perfil.tsx       # perfil
+│   └── (app)/           # área logada (abas: início, crédito, entradas, docs)
+└── lib/
+    ├── data.ts          # persona, score e dados de domínio
+    ├── credit.ts        # linhas de crédito e análise de match
+    ├── flow.tsx         # estado compartilhado da jornada
+    └── ui.tsx           # design system (tema e componentes)
+```
 
-Join our community of developers creating universal apps.
+## Licença
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Veja [LICENSE](./LICENSE).
