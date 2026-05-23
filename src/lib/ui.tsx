@@ -28,10 +28,13 @@ export const C = {
   black: "#FFFFFF", // texto SOBRE o CTA primário
   danger: "#C0392B", // erro (AA)
   ok: "#3D7BFF",
-  accent: "#2563EB", // azul de destaque (best match, match, links) — AA robusto
+  accent: "#2563EB", // azul de destaque (CTAs, links) — AA robusto
   accentSoft: "rgba(37,99,235,0.10)",
   success: "#1A7A4A", // verde (AA sobre branco)
   warn: "#B45309", // âmbar (AA sobre branco)
+  ai: "#7C3AED", // violeta — identidade de "calculado por IA" (match) — AA
+  aiDeep: "#5B21B6", // violeta profundo (gradiente do match / texto forte)
+  aiSoft: "rgba(124,58,237,0.12)", // trilho/halo do match
 };
 
 export const S = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 };
@@ -205,8 +208,19 @@ export function Btn({
   );
 }
 
-/** Barra de match: preenchimento sólido azul até `value`% e trecho translúcido
-    até `potential`%. Número sempre visível (acessível — nunca cor sozinha). */
+/** Selo "Calculado por IA" — violeta, identidade exclusiva do match. */
+export function AiBadge({ label = "Match por IA" }: { label?: string }) {
+  return (
+    <View style={st.aiBadge}>
+      <Text style={st.aiSpark}>✦</Text>
+      <Text style={st.aiBadgeTxt}>{label}</Text>
+    </View>
+  );
+}
+
+/** Barra de match — identidade VIOLETA de IA (destaca-se do azul dos CTAs).
+    Preenchimento sólido até `value`% e trecho translúcido até `potential`%.
+    Número sempre visível (acessível — nunca cor sozinha). */
 export function MatchBar({ value, potential }: { value: number; potential?: number }) {
   const v = Math.max(0, Math.min(100, value));
   const p = potential != null ? Math.max(v, Math.min(100, potential)) : v;
@@ -219,6 +233,31 @@ export function MatchBar({ value, potential }: { value: number; potential?: numb
       <Text style={st.matchNum}>
         {v}%{p > v ? <Text style={st.matchNumPot}>{`  →  ${p}%`}</Text> : null}
       </Text>
+    </View>
+  );
+}
+
+/** "Logo" de instituição financeira — monograma de marca (sem assets).
+    Troque por <Image> quando houver os arquivos de logo reais. */
+export function InstitutionLogo({
+  initials,
+  color,
+  fg,
+  size = 40,
+}: {
+  initials: string;
+  color: string;
+  fg: string;
+  size?: number;
+}) {
+  return (
+    <View
+      style={[
+        st.instLogo,
+        { width: size, height: size, borderRadius: size * 0.28, backgroundColor: color },
+      ]}
+    >
+      <Text style={[st.instLogoTxt, { color: fg, fontSize: size * 0.38 }]}>{initials}</Text>
     </View>
   );
 }
@@ -418,11 +457,29 @@ const st = StyleSheet.create({
   barTrack: { height: 6, borderRadius: 999, backgroundColor: C.cardAlt, overflow: "hidden" },
   barFill: { height: "100%", borderRadius: 999, backgroundColor: C.accent },
   matchRow: { flexDirection: "row", alignItems: "center", gap: S.sm },
-  matchTrack: { flex: 1, height: 8, borderRadius: 999, backgroundColor: C.cardAlt, overflow: "hidden" },
-  matchPotential: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: C.accentSoft },
-  matchFill: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: C.accent },
-  matchNum: { color: C.text, fontSize: 13, fontWeight: "800", fontVariant: ["tabular-nums"], minWidth: 36, textAlign: "right" },
-  matchNumPot: { color: C.accent, fontWeight: "700" },
+  matchTrack: { flex: 1, height: 10, borderRadius: 999, backgroundColor: C.cardAlt, overflow: "hidden" },
+  matchPotential: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: "rgba(124,58,237,0.22)" },
+  matchFill: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: C.ai },
+  matchNum: { color: C.ai, fontSize: 14, fontWeight: "900", fontVariant: ["tabular-nums"], minWidth: 36, textAlign: "right" },
+  matchNumPot: { color: C.aiDeep, fontWeight: "800" },
+  // AiBadge
+  aiBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    alignSelf: "flex-start",
+    backgroundColor: C.aiSoft,
+    borderColor: "rgba(124,58,237,0.35)",
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  aiSpark: { color: C.ai, fontSize: 12, fontWeight: "900" },
+  aiBadgeTxt: { color: C.aiDeep, fontSize: 11, fontWeight: "800", letterSpacing: 0.2 },
+  // InstitutionLogo
+  instLogo: { alignItems: "center", justifyContent: "center" },
+  instLogoTxt: { fontWeight: "900", letterSpacing: -0.5 },
   toastWrap: { position: "absolute", top: 0, left: 0, right: 0, alignItems: "center", paddingTop: S.lg, zIndex: 50 },
   toast: { backgroundColor: C.card, borderColor: C.accent, borderWidth: 1, borderRadius: 12, paddingHorizontal: S.md, paddingVertical: S.sm, maxWidth: 480 },
   toastTxt: { color: C.text, fontSize: 13, fontWeight: "700", textAlign: "center" },
