@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "credito-mei",
-    "slug": "credito-mei",
+    "name": "giro-mei",
+    "slug": "giro-mei",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "creditomei",
-    "userInterfaceStyle": "automatic",
+    "scheme": "giromei",
+    "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/expo.icon"
     },
@@ -28,7 +28,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#2563EB",
           "android": {
             "image": "./assets/images/splash-icon.png",
             "imageWidth": 76
