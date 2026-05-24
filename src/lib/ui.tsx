@@ -1,7 +1,5 @@
-/* ---------------------------------------------------------------------------
-   Design system enxuto — tema CLARO, editorial. Fundo branco, hierarquia em
-   cinzas, acento azul confiável. Componentes self-contained.
---------------------------------------------------------------------------- */
+/* Design system — tema claro quente. Marca verde-floresta, acento âmbar-ouro;
+   violeta reservado só para a IA. */
 import { ReactNode } from "react";
 import {
   ActivityIndicator,
@@ -17,24 +15,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
 export const C = {
-  bg: "#F4F6F9", // fundo de tela — branco levemente azulado
-  card: "#FFFFFF", // card elevado (separação por sombra)
-  cardAlt: "#EDF0F5", // input / track de barra (recesso sobre branco)
-  border: "#DDE2EA", // borda sutil / separadores
-  text: "#0F1117", // texto principal (~17:1)
-  muted: "#4A5568", // texto secundário (~7:1, AAA)
-  faint: "#718096", // texto terciário / desabilitado (AA sobre card)
-  white: "#3D7BFF", // FUNDO do CTA primário (papel: cor de contraste alto)
-  black: "#FFFFFF", // texto SOBRE o CTA primário
-  danger: "#C0392B", // erro (AA)
-  ok: "#3D7BFF",
-  accent: "#2563EB", // azul de destaque (CTAs, links) — AA robusto
-  accentSoft: "rgba(37,99,235,0.10)",
-  success: "#1A7A4A", // verde (AA sobre branco)
-  warn: "#B45309", // âmbar (AA sobre branco)
-  ai: "#7C3AED", // violeta — identidade de "calculado por IA" (match) — AA
-  aiDeep: "#5B21B6", // violeta profundo (gradiente do match / texto forte)
-  aiSoft: "rgba(124,58,237,0.12)", // trilho/halo do match
+  bg: "#F7F4EF",
+  card: "#FFFFFF",
+  cardAlt: "#EDE9E1",
+  border: "#D4CCBF",
+  text: "#1A1208",
+  muted: "#4A3F2F",
+  faint: "#7A6D5A",
+  white: "#1B4D3E", // fundo do CTA primário (verde-floresta da marca)
+  black: "#FFFFFF", // texto/ícone sobre superfícies de marca
+  danger: "#B91C1C",
+  ok: "#1B4D3E",
+  accent: "#1B4D3E",
+  accentSoft: "rgba(27,77,62,0.10)",
+  success: "#1A5C36",
+  warn: "#8C4E00",
+  brand: "#1B4D3E",
+  brandSoft: "rgba(27,77,62,0.10)",
+  gold: "#C17B2A", // acento "valor conquistado"
+  goldSoft: "rgba(193,123,42,0.12)",
+  ai: "#7C3AED", // exclusivo do "calculado por IA"
+  aiDeep: "#5B21B6",
+  aiSoft: "rgba(124,58,237,0.12)",
 };
 
 export const S = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 };
@@ -138,7 +140,7 @@ export function Pill({
     <View
       style={[
         st.pill,
-        tone === "ok" && { borderColor: C.white },
+        tone === "ok" && { borderColor: C.gold },
         tone === "danger" && { borderColor: C.danger },
         tone === "accent" && { borderColor: C.accent, backgroundColor: C.accentSoft },
         tone === "success" && { borderColor: C.success },
@@ -187,8 +189,8 @@ export function Btn({
 }) {
   const isGhost = variant === "ghost";
   const isAccent = variant === "accent";
-  const spinnerColor = isGhost ? C.text : isAccent ? C.white : C.black;
-  const labelColor = isGhost ? C.text : isAccent ? C.white : C.black;
+  const spinnerColor = isGhost ? C.text : C.black;
+  const labelColor = isGhost ? C.text : C.black;
   return (
     <Pressable
       onPress={disabled || loading ? undefined : onPress}
@@ -420,8 +422,8 @@ const st = StyleSheet.create({
   backTxt: { color: C.muted, fontSize: 15, fontWeight: "600" },
   stepTxt: { color: C.muted, fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" },
   brand: { flexDirection: "row", alignItems: "center", gap: 8 },
-  brandMark: { height: 26, width: 26, borderRadius: 7, backgroundColor: C.white, alignItems: "center", justifyContent: "center" },
-  brandDot: { height: 9, width: 9, borderRadius: 5, backgroundColor: C.black },
+  brandMark: { height: 26, width: 26, borderRadius: 8, backgroundColor: C.brand, alignItems: "center", justifyContent: "center" },
+  brandDot: { height: 9, width: 9, borderRadius: 5, backgroundColor: C.gold },
   brandTxt: { color: C.text, fontWeight: "800", fontSize: 15 },
   title: { color: C.text, fontSize: 28, fontWeight: "800", lineHeight: 32, letterSpacing: -0.5 },
   h2: { color: C.text, fontSize: 18, fontWeight: "800" },
@@ -444,7 +446,7 @@ const st = StyleSheet.create({
   cardHighlight: {
     borderColor: C.accent,
     borderWidth: 2,
-    backgroundColor: "rgba(37,99,235,0.06)",
+    backgroundColor: "rgba(27,77,62,0.06)",
     shadowColor: C.accent,
     shadowOpacity: 0.16,
     shadowRadius: 10,
@@ -502,7 +504,7 @@ const st = StyleSheet.create({
   },
   stepperDotDone: { backgroundColor: C.accent, borderColor: C.accent },
   stepperDotActive: { borderColor: C.accent, backgroundColor: C.accentSoft },
-  stepperCheck: { color: C.white, fontSize: 13, fontWeight: "900" },
+  stepperCheck: { color: C.black, fontSize: 13, fontWeight: "900" },
   stepperLine: { flex: 1, width: 2, minHeight: 18, backgroundColor: C.border, marginVertical: 2 },
   stepperLineDone: { backgroundColor: C.accent },
   stepperBody: { flex: 1, paddingBottom: S.md, paddingTop: 1 },
