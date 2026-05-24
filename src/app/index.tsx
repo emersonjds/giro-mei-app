@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 
-import { Screen, Title, Body, Muted, Btn, C, S } from "@/lib/ui";
+import { Screen, Logo, Title, Body, Muted, Btn, C, S } from "@/lib/ui";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -14,11 +14,9 @@ export default function LoginScreen() {
     <Screen>
       <View style={ls.hero}>
         <View style={ls.brandRow}>
-          <View style={ls.mark}>
-            <View style={ls.markDot} />
-          </View>
+          <Logo size={72} />
           <Text style={ls.wordmark}>
-            giro<Text style={{ color: C.muted }}>mei</Text>
+            Giro<Text style={{ color: C.accent }}>mei</Text>
           </Text>
         </View>
         <Title>Capital de giro para quem o banco não enxerga.</Title>
@@ -94,17 +92,8 @@ function SocialBtn({
 
 const ls = StyleSheet.create({
   hero: { gap: S.sm, marginTop: S.lg, marginBottom: S.sm },
-  brandRow: { flexDirection: "row", alignItems: "center", gap: S.sm, marginBottom: S.sm },
-  mark: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: C.accent,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  markDot: { width: 12, height: 12, borderRadius: 999, backgroundColor: C.card },
-  wordmark: { color: C.text, fontSize: 24, fontWeight: "900", letterSpacing: -0.5 },
+  brandRow: { alignItems: "center", gap: S.xs, marginBottom: S.md },
+  wordmark: { color: C.text, fontSize: 32, fontWeight: "900", letterSpacing: -0.8 },
   divider: { flexDirection: "row", alignItems: "center", gap: S.sm, paddingVertical: S.xs },
   line: { flex: 1, height: 1, backgroundColor: C.border },
   social: {
