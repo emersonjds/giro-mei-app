@@ -7,7 +7,6 @@ import { computeScore, computeCredit, formatBRL } from "@/lib/data";
 import {
   rankLines,
   bestLine,
-  CREDIT_PURPOSES,
   ALL_DOC_TYPES,
   formatDateBR,
   Contract,
@@ -46,11 +45,11 @@ const STATUS_LABEL: Record<Contract["status"], string> = {
 
 export default function InicioScreen() {
   const router = useRouter();
-  const { persona, formalized, uploaded, purpose, requestedAmount, contract, monthlyRevenue } = useFlow();
+  const { persona, formalized, uploaded, requestedAmount, contract, monthlyRevenue } = useFlow();
 
   const input = useMemo(
-    () => ({ persona, formalized, uploaded, purpose, requestedAmount }),
-    [persona, formalized, uploaded, purpose, requestedAmount],
+    () => ({ persona, formalized, uploaded, requestedAmount }),
+    [persona, formalized, uploaded, requestedAmount],
   );
   const score = useMemo(() => computeScore(input).score, [input]);
   const credit = useMemo(() => computeCredit(input), [input]);
@@ -60,7 +59,6 @@ export default function InicioScreen() {
   const HONORIFICS = new Set(["dona", "seu", "sr", "sra"]);
   const nameParts = persona.name.trim().split(/\s+/);
   const firstName = nameParts.find((p) => !HONORIFICS.has(p.toLowerCase())) ?? nameParts[0];
-  const purposeMeta = purpose ? CREDIT_PURPOSES.find((p) => p.id === purpose) : null;
   const nextInstallment = contract
     ? contract.installments.find((p) => p.status === "a_vencer" || p.status === "atrasada")
     : undefined;
@@ -80,19 +78,25 @@ export default function InicioScreen() {
     <Screen>
       <View style={hs.topRow}>
         <Brand />
-        <Pressable
-          onPress={() => router.push("/perfil")}
-          hitSlop={10}
-          style={hs.avatar}
-        >
-          <Text style={{ fontSize: 20 }}>👤</Text>
-        </Pressable>
+        <View style={hs.topActions}>
+          <Pressable hitSlop={10} style={hs.iconBtn} accessibilityLabel="Notificações">
+            <Text style={{ fontSize: 18 }}>🔔</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/perfil")}
+            hitSlop={10}
+            style={hs.avatar}
+            accessibilityLabel="Meu perfil"
+          >
+            <Text style={{ fontSize: 20 }}>👤</Text>
+          </Pressable>
+        </View>
       </View>
 
       <View style={{ gap: S.sm, marginTop: S.sm }}>
         <Title>Olá, {firstName}</Title>
         <View style={{ flexDirection: "row" }}>
-          <Pill tone="accent">Score {score}</Pill>
+          <Pill tone="mint">Score Giromei {score}</Pill>
         </View>
       </View>
 
@@ -118,38 +122,20 @@ export default function InicioScreen() {
           <Btn label="Ver meu crédito" variant="accent" onPress={() => router.push("/credito")} />
         </Card>
       ) : (
-        <Card tone="highlight" style={{ gap: S.sm }}>
-          <Label>Crédito estimado</Label>
-          <Text style={[hs.bigMoney, numStyle]}>{formatBRL(credit.amount)}</Text>
-          {best ? <Muted>Melhor linha para você: {best.line.name}</Muted> : null}
-          <Btn label="Ver minhas linhas" variant="accent" onPress={() => router.push("/credito")} />
+        <Card tone="dark" style={{ gap: S.sm }}>
+          <Text style={hs.heroLabel}>Capital de giro disponível</Text>
+          <Text style={[hs.heroMoney, numStyle]}>{formatBRL(credit.amount)}</Text>
+          {best ? (
+            <Text style={hs.heroSub}>Melhor linha para você: {best.line.name}</Text>
+          ) : null}
+          <Btn label="Solicitar crédito" variant="mint" onPress={() => router.push("/credito")} />
         </Card>
       )}
 
       <View style={{ gap: S.sm }}>
-        <Label>Seu objetivo</Label>
-        <Card style={{ gap: S.sm }}>
-          <View style={hs.cardHead}>
-            {purposeMeta ? (
-              <Pill tone="accent">
-                {purposeMeta.icon} {purposeMeta.label}
-              </Pill>
-            ) : (
-              <Muted style={{ flex: 1 }}>Você ainda não definiu um objetivo.</Muted>
-            )}
-          </View>
-          <Btn
-            label={purposeMeta ? "Editar" : "Definir objetivo"}
-            variant="ghost"
-            onPress={() => router.push("/objetivo")}
-          />
-        </Card>
-      </View>
-
-      <View style={{ gap: S.sm }}>
         <View style={hs.cardHead}>
           <Label>Seu movimento</Label>
-          <Pressable onPress={() => router.push("/entradas")} hitSlop={8}>
+          <Pressable onPress={() => router.push("/gestao")} hitSlop={8}>
             <Text style={hs.link}>Ver mais</Text>
           </Pressable>
         </View>
@@ -185,6 +171,20 @@ export default function InicioScreen() {
 
 const hs = StyleSheet.create({
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  topActions: { flexDirection: "row", alignItems: "center", gap: S.sm },
+  iconBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 999,
+    borderColor: C.border,
+    borderWidth: 1,
+    backgroundColor: C.card,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  heroLabel: { color: "rgba(255,255,255,0.72)", fontSize: 13, fontWeight: "700" },
+  heroMoney: { color: "#FFFFFF", fontSize: 34, fontWeight: "900", letterSpacing: -1 },
+  heroSub: { color: "rgba(255,255,255,0.82)", fontSize: 13, fontWeight: "600" },
   avatar: {
     width: 44,
     height: 44,

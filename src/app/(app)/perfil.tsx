@@ -4,20 +4,7 @@ import { useRouter } from "expo-router";
 
 import { useFlow } from "@/lib/flow";
 import { computeScore, formatCNPJ, BANK_PARTNERS } from "@/lib/data";
-import {
-  Screen,
-  TopBar,
-  Title,
-  Body,
-  Muted,
-  Label,
-  Card,
-  Btn,
-  Pill,
-  C,
-  S,
-  numStyle,
-} from "@/lib/ui";
+import { Screen, Brand, Title, Body, Muted, Label, Card, Btn, Pill, C, S, numStyle } from "@/lib/ui";
 
 export default function PerfilScreen() {
   const router = useRouter();
@@ -35,9 +22,9 @@ export default function PerfilScreen() {
 
   return (
     <Screen>
-      <TopBar />
+      <Brand />
 
-      <View style={{ gap: S.sm, marginTop: S.md }}>
+      <View style={{ gap: S.sm, marginTop: S.sm }}>
         <Title>Meu perfil</Title>
       </View>
 
