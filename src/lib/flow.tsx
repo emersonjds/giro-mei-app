@@ -3,7 +3,8 @@
 --------------------------------------------------------------------------- */
 import { createContext, useContext, useMemo, useState, ReactNode } from "react";
 import {
-  TRANCISTA,
+  DEFAULT_PERSONA,
+  DEFAULT_MONTHLY_REVENUE,
   Persona,
   CnpjSearch,
   searchCNPJ,
@@ -25,6 +26,8 @@ type FlowState = {
   persona: Persona;
   trade: string;
   setTrade: (v: string) => void;
+  monthlyRevenue: number;
+  setMonthlyRevenue: (v: number) => void;
   cpf: string;
   setCpf: (v: string) => void;
 
@@ -63,8 +66,9 @@ type FlowState = {
 const Ctx = createContext<FlowState | null>(null);
 
 export function FlowProvider({ children }: { children: ReactNode }) {
-  const [trade, setTrade] = useState(TRANCISTA.trade);
-  const [cpf, setCpf] = useState(TRANCISTA.suggestedCPF);
+  const [trade, setTrade] = useState(DEFAULT_PERSONA.trade);
+  const [monthlyRevenue, setMonthlyRevenueState] = useState(DEFAULT_MONTHLY_REVENUE);
+  const [cpf, setCpf] = useState(DEFAULT_PERSONA.suggestedCPF);
   const [search, setSearch] = useState<CnpjSearch | null>(null);
   const [createdCNPJ, setCreatedCNPJ] = useState<string | null>(null);
   const [uploaded, setUploaded] = useState<string[]>([]);
@@ -79,10 +83,14 @@ export function FlowProvider({ children }: { children: ReactNode }) {
     const activeCNPJ =
       search?.status === "found" ? search.cnpj : createdCNPJ ?? null;
 
+    const persona: Persona = { ...DEFAULT_PERSONA, trade, monthlyRevenue };
+
     return {
-      persona: { ...TRANCISTA, trade },
+      persona,
       trade,
       setTrade,
+      monthlyRevenue,
+      setMonthlyRevenue: (v: number) => setMonthlyRevenueState(Math.max(0, v)),
       cpf,
       setCpf,
       search,
@@ -123,7 +131,7 @@ export function FlowProvider({ children }: { children: ReactNode }) {
         const line = CREDIT_LINES.find((l) => l.id === lineId);
         if (!line) return;
         const c = buildContract(line, {
-          persona: TRANCISTA,
+          persona,
           formalized,
           uploaded,
           purpose,
@@ -167,8 +175,9 @@ export function FlowProvider({ children }: { children: ReactNode }) {
         }),
 
       reset: () => {
-        setTrade(TRANCISTA.trade);
-        setCpf(TRANCISTA.suggestedCPF);
+        setTrade(DEFAULT_PERSONA.trade);
+        setMonthlyRevenueState(DEFAULT_MONTHLY_REVENUE);
+        setCpf(DEFAULT_PERSONA.suggestedCPF);
         setSearch(null);
         setCreatedCNPJ(null);
         setUploaded([]);
@@ -181,6 +190,7 @@ export function FlowProvider({ children }: { children: ReactNode }) {
     };
   }, [
     trade,
+    monthlyRevenue,
     cpf,
     search,
     createdCNPJ,
