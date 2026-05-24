@@ -1,8 +1,10 @@
-/* Design system — tema claro quente. Marca verde-floresta, acento âmbar-ouro;
-   violeta reservado só para a IA. */
+/* Design system — Giromei. Tema claro/clean fintech.
+   Paleta: Primary verde-petróleo #004B44, Secondary menta #2DD4BF,
+   Tertiary slate #1E293B, Neutral #F8FAFC. */
 import { ReactNode } from "react";
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -15,29 +17,46 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
 export const C = {
-  bg: "#F7F4EF",
+  bg: "#F8FAFC", // Neutral
   card: "#FFFFFF",
-  cardAlt: "#EDE9E1",
-  border: "#D4CCBF",
-  text: "#1A1208",
-  muted: "#4A3F2F",
-  faint: "#7A6D5A",
-  white: "#1B4D3E", // fundo do CTA primário (verde-floresta da marca)
+  cardAlt: "#EEF2F6",
+  border: "#E2E8F0", // slate-200
+  text: "#1E293B", // Tertiary / slate-800
+  muted: "#475569", // slate-600
+  faint: "#94A3B8", // slate-400
+  white: "#004B44", // fundo do CTA primário (verde-petróleo da marca)
   black: "#FFFFFF", // texto/ícone sobre superfícies de marca
-  danger: "#B91C1C",
-  ok: "#1B4D3E",
-  accent: "#1B4D3E",
-  accentSoft: "rgba(27,77,62,0.10)",
-  success: "#1A5C36",
-  warn: "#8C4E00",
-  brand: "#1B4D3E",
-  brandSoft: "rgba(27,77,62,0.10)",
-  gold: "#C17B2A", // acento "valor conquistado"
-  goldSoft: "rgba(193,123,42,0.12)",
-  ai: "#7C3AED", // exclusivo do "calculado por IA"
-  aiDeep: "#5B21B6",
-  aiSoft: "rgba(124,58,237,0.12)",
+  danger: "#DC2626",
+  ok: "#004B44",
+  accent: "#004B44", // Primary
+  accentSoft: "rgba(0,75,68,0.10)",
+  success: "#0F766E", // teal-700 — concluído/pago
+  warn: "#B45309",
+  brand: "#004B44",
+  brandSoft: "rgba(0,75,68,0.10)",
+  mint: "#2DD4BF", // Secondary — destaque/menta
+  mintSoft: "rgba(45,212,191,0.16)",
+  gold: "#0F766E", // "valor conquistado" (sem ouro na paleta → teal)
+  goldSoft: "rgba(15,118,110,0.12)",
+  ai: "#2DD4BF", // identidade do "match por IA" — menta
+  aiDeep: "#0F766E",
+  aiSoft: "rgba(45,212,191,0.16)",
+  dark: "#003A35", // superfícies escuras (resumo/hero)
 };
+
+/** Logo da marca (PNG). Troque assets/images/giromei-logo.png pelo arquivo real. */
+export const LOGO = require("../../assets/images/giromei-logo.png");
+
+export function Logo({ size = 96 }: { size?: number }) {
+  return (
+    <Image
+      source={LOGO}
+      style={{ width: size, height: size }}
+      resizeMode="contain"
+      accessibilityLabel="Giromei"
+    />
+  );
+}
 
 export const S = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 };
 
@@ -81,10 +100,11 @@ export function Brand() {
   return (
     <View style={st.brand}>
       <View style={st.brandMark}>
-        <View style={st.brandDot} />
+        <View style={st.brandArc} />
+        <Text style={st.brandG}>G</Text>
       </View>
       <Text style={st.brandTxt}>
-        giro<Text style={{ color: C.muted }}>mei</Text>
+        Giro<Text style={{ color: C.accent }}>mei</Text>
       </Text>
     </View>
   );
@@ -113,7 +133,7 @@ export function Card({
 }: {
   children: ReactNode;
   style?: ViewStyle;
-  tone?: "default" | "highlight" | "locked";
+  tone?: "default" | "highlight" | "locked" | "dark";
 }) {
   return (
     <View
@@ -121,6 +141,7 @@ export function Card({
         st.card,
         tone === "highlight" && st.cardHighlight,
         tone === "locked" && st.cardLocked,
+        tone === "dark" && st.cardDark,
         style,
       ]}
     >
@@ -134,7 +155,7 @@ export function Pill({
   tone = "default",
 }: {
   children: ReactNode;
-  tone?: "default" | "ok" | "danger" | "accent" | "success";
+  tone?: "default" | "ok" | "danger" | "accent" | "success" | "mint";
 }) {
   return (
     <View
@@ -144,6 +165,7 @@ export function Pill({
         tone === "danger" && { borderColor: C.danger },
         tone === "accent" && { borderColor: C.accent, backgroundColor: C.accentSoft },
         tone === "success" && { borderColor: C.success },
+        tone === "mint" && { borderColor: "transparent", backgroundColor: C.mintSoft },
       ]}
     >
       <Text
@@ -152,6 +174,7 @@ export function Pill({
           tone === "danger" && { color: C.danger },
           tone === "accent" && { color: C.accent },
           tone === "success" && { color: C.success },
+          tone === "mint" && { color: C.aiDeep },
         ]}
       >
         {children}
@@ -185,26 +208,32 @@ export function Btn({
   onPress?: () => void;
   loading?: boolean;
   disabled?: boolean;
-  variant?: "primary" | "ghost" | "accent";
+  variant?: "primary" | "ghost" | "accent" | "mint";
 }) {
   const isGhost = variant === "ghost";
-  const isAccent = variant === "accent";
-  const spinnerColor = isGhost ? C.text : C.black;
-  const labelColor = isGhost ? C.text : C.black;
+  const isMint = variant === "mint";
+  // Menta usa texto escuro (tertiary); demais usam texto sobre marca.
+  const onColor = isGhost ? C.text : isMint ? C.dark : C.black;
   return (
     <Pressable
       onPress={disabled || loading ? undefined : onPress}
       style={({ pressed }) => [
         st.btn,
-        isGhost ? st.btnGhost : isAccent ? st.btnAccent : st.btnPrimary,
+        isGhost
+          ? st.btnGhost
+          : isMint
+            ? st.btnMint
+            : variant === "accent"
+              ? st.btnAccent
+              : st.btnPrimary,
         (disabled || loading) && { opacity: 0.45 },
         pressed && { opacity: 0.8 },
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={spinnerColor} />
+        <ActivityIndicator color={onColor} />
       ) : (
-        <Text style={[st.btnTxt, { color: labelColor }]}>{label}</Text>
+        <Text style={[st.btnTxt, { color: onColor }]}>{label}</Text>
       )}
     </Pressable>
   );
@@ -422,9 +451,10 @@ const st = StyleSheet.create({
   backTxt: { color: C.muted, fontSize: 15, fontWeight: "600" },
   stepTxt: { color: C.muted, fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" },
   brand: { flexDirection: "row", alignItems: "center", gap: 8 },
-  brandMark: { height: 26, width: 26, borderRadius: 8, backgroundColor: C.brand, alignItems: "center", justifyContent: "center" },
-  brandDot: { height: 9, width: 9, borderRadius: 5, backgroundColor: C.gold },
-  brandTxt: { color: C.text, fontWeight: "800", fontSize: 15 },
+  brandMark: { height: 28, width: 28, borderRadius: 999, backgroundColor: C.brand, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  brandArc: { position: "absolute", top: -3, right: -3, height: 16, width: 16, borderRadius: 999, borderWidth: 3, borderColor: C.mint, borderLeftColor: "transparent", borderBottomColor: "transparent", transform: [{ rotate: "45deg" }] },
+  brandG: { color: C.card, fontWeight: "900", fontSize: 15, lineHeight: 18 },
+  brandTxt: { color: C.text, fontWeight: "800", fontSize: 16, letterSpacing: -0.3 },
   title: { color: C.text, fontSize: 28, fontWeight: "800", lineHeight: 32, letterSpacing: -0.5 },
   h2: { color: C.text, fontSize: 18, fontWeight: "800" },
   body: { color: C.muted, fontSize: 15, lineHeight: 22 },
@@ -446,7 +476,7 @@ const st = StyleSheet.create({
   cardHighlight: {
     borderColor: C.accent,
     borderWidth: 2,
-    backgroundColor: "rgba(27,77,62,0.06)",
+    backgroundColor: "rgba(0,75,68,0.05)",
     shadowColor: C.accent,
     shadowOpacity: 0.16,
     shadowRadius: 10,
@@ -454,15 +484,24 @@ const st = StyleSheet.create({
     elevation: 5,
   },
   cardLocked: { opacity: 0.45, shadowOpacity: 0 },
+  cardDark: {
+    backgroundColor: C.dark,
+    borderColor: C.dark,
+    shadowColor: C.dark,
+    shadowOpacity: 0.25,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
   pill: { alignSelf: "flex-start", borderColor: C.border, borderWidth: 1, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
   pillTxt: { color: C.text, fontSize: 11, fontWeight: "700" },
   barTrack: { height: 6, borderRadius: 999, backgroundColor: C.cardAlt, overflow: "hidden" },
   barFill: { height: "100%", borderRadius: 999, backgroundColor: C.accent },
   matchRow: { flexDirection: "row", alignItems: "center", gap: S.sm },
   matchTrack: { flex: 1, height: 10, borderRadius: 999, backgroundColor: C.cardAlt, overflow: "hidden" },
-  matchPotential: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: "rgba(124,58,237,0.22)" },
+  matchPotential: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: "rgba(45,212,191,0.30)" },
   matchFill: { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: C.ai },
-  matchNum: { color: C.ai, fontSize: 14, fontWeight: "900", fontVariant: ["tabular-nums"], minWidth: 36, textAlign: "right" },
+  matchNum: { color: C.aiDeep, fontSize: 14, fontWeight: "900", fontVariant: ["tabular-nums"], minWidth: 36, textAlign: "right" },
   matchNumPot: { color: C.aiDeep, fontWeight: "800" },
   aiBadge: {
     flexDirection: "row",
@@ -470,7 +509,7 @@ const st = StyleSheet.create({
     gap: 5,
     alignSelf: "flex-start",
     backgroundColor: C.aiSoft,
-    borderColor: "rgba(124,58,237,0.35)",
+    borderColor: "rgba(45,212,191,0.45)",
     borderWidth: 1,
     borderRadius: 999,
     paddingHorizontal: 10,
@@ -487,6 +526,7 @@ const st = StyleSheet.create({
   btnPrimary: { backgroundColor: C.white },
   btnGhost: { backgroundColor: "transparent", borderColor: C.border, borderWidth: 1 },
   btnAccent: { backgroundColor: C.accent },
+  btnMint: { backgroundColor: C.mint },
   btnTxt: { fontSize: 16, fontWeight: "800" },
   numLarge: { fontVariant: ["tabular-nums"] },
   stepperWrap: { gap: 0 },
