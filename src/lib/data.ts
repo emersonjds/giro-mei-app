@@ -1,9 +1,8 @@
 /* ---------------------------------------------------------------------------
-   Núcleo de dados/lógica — crédito para microempreendedores informais.
-   Cenário-base: uma TRANCISTA. A ideia (vinda do AfroScore p/ diaristas) é a
-   mesma: a renda recorrente — aqui, a AGENDA DE TRABALHOS FUTUROS — vira
-   garantia, e nós intermediamos a entrada dela no sistema bancário.
-   Tudo aqui é mock para fins de demonstração.
+   Núcleo de dados/lógica — capital de giro para MEIs (e informais virando MEI).
+   Modelo v6: dupla validação — score alternativo próprio ("2ª camada") + aval
+   do FAMPE/Sebrae (até 80%). Garantia = FAMPE, não agenda de trabalhos futuros.
+   Sirve qualquer ofício. Tudo mock para fins de demonstração.
 --------------------------------------------------------------------------- */
 
 // `CreditPurpose` é definido em credit.ts; importado como tipo para o ScoreInput.
@@ -104,8 +103,8 @@ export function searchCNPJ(cpf: string): CnpjSearch {
   return {
     status: "found",
     cnpj: generateCNPJ(cpf),
-    razao: "KEILA FERNANDES SERVIÇOS DE BELEZA MEI",
-    cnae: "9602-5/01 — Cabeleireiros e serviços de beleza",
+    razao: "KEILA FERNANDES SERVIÇOS MEI",
+    cnae: "9602-5/01 — Outros serviços de beleza e higiene pessoal",
     abertura: "12/03/2021",
     situacao: "Ativa",
   };
@@ -113,16 +112,12 @@ export function searchCNPJ(cpf: string): CnpjSearch {
 
 /* ----------------------------- persona base ------------------------------- */
 
-export type Obra = {
-  id: string;
-  titulo: string;
-  local: string;
-  valor: number;
-  meses: number;
-  inicio: string;
-  status: "contratada" | "prevista";
-};
-
+/**
+ * Persona genérica para qualquer MEI. O sinal de renda é o faturamento médio
+ * mensal (monthlyRevenue), editável pelo usuário na tela de movimento.
+ * Não há mais lista de "obras/agenda" — a garantia é o FAMPE, não recebíveis
+ * futuros específicos de um ofício.
+ */
 export type Persona = {
   name: string;
   trade: string;
@@ -131,44 +126,29 @@ export type Persona = {
   yearsInTrade: number;
   /** CPF válido pré-preenchido para a demo (o usuário pode trocar). */
   suggestedCPF: string;
-  obras: Obra[];
+  /** Faturamento médio mensal declarado pelo usuário (R$). Editável. */
+  monthlyRevenue: number;
 };
 
-export const TRANCISTA: Persona = {
+/** Valor padrão de faturamento mensal para a demo (qualquer ofício). */
+export const DEFAULT_MONTHLY_REVENUE = 2800;
+
+export const DEFAULT_PERSONA: Persona = {
   name: "Dona Keila",
-  trade: "Trancista",
+  trade: "Autônoma",
   age: 34,
   location: "Grajaú, São Paulo",
   yearsInTrade: 11,
   suggestedCPF: "111.444.777-35", // CPF válido; soma par => sem CNPJ (vamos criar)
-  obras: [
-    { id: "s1", titulo: "Contrato mensal — Salão Afro Raízes", local: "Grajaú, SP", valor: 4800, meses: 6, inicio: "Jun/2026", status: "contratada" },
-    { id: "s2", titulo: "Pacote formaturas — colégio estadual", local: "Capão Redondo, SP", valor: 3200, meses: 2, inicio: "Jun/2026", status: "contratada" },
-    { id: "s3", titulo: "Turma de curso — tranças box e nagô", local: "Online + Grajaú, SP", valor: 5400, meses: 3, inicio: "Jul/2026", status: "contratada" },
-    { id: "s4", titulo: "Carteira de clientes fixas (12/mês)", local: "Atendimento domiciliar, SP", valor: 7200, meses: 6, inicio: "Ago/2026", status: "prevista" },
-    { id: "s5", titulo: "Contrato produtora — eventos Feira Preta", local: "São Paulo, SP", valor: 9600, meses: 4, inicio: "Out/2026", status: "prevista" },
-  ],
+  monthlyRevenue: DEFAULT_MONTHLY_REVENUE,
 };
 
-export const HORIZON_MONTHS = 18;
-
-/** Saturação do pipeline usada na calibragem do score. */
-export const PIPELINE_SATURATION = 35000;
-
-export function pipelineTotal(p: Persona): number {
-  return p.obras.reduce((a, o) => a + o.valor, 0);
-}
-
-export function contractedTotal(p: Persona): number {
-  return p.obras.filter((o) => o.status === "contratada").reduce((a, o) => a + o.valor, 0);
-}
-
-export function projectedMonthly(p: Persona): number {
-  return Math.round(pipelineTotal(p) / HORIZON_MONTHS);
-}
-
-export function obraMonthly(o: Obra): number {
-  return Math.round(o.valor / o.meses);
+/**
+ * Faturamento anual projetado (12 meses). Usado como referência de capacidade
+ * de pagamento — NÃO como garantia (a garantia é o FAMPE).
+ */
+export function annualRevenue(p: Persona): number {
+  return p.monthlyRevenue * 12;
 }
 
 /* ------------------------------ documentos -------------------------------- */
@@ -177,7 +157,7 @@ export type DocType = {
   id: string;
   label: string;
   hint: string;
-  group: "conta" | "banco" | "obra" | "fiscal";
+  group: "conta" | "banco" | "movimento" | "fiscal";
 };
 
 export const DOC_TYPES: DocType[] = [
@@ -186,7 +166,7 @@ export const DOC_TYPES: DocType[] = [
   { id: "telefone", label: "Telefone / internet", hint: "Fatura recente", group: "conta" },
   { id: "aluguel", label: "Comprovante de aluguel", hint: "Recibo ou contrato", group: "conta" },
   { id: "extrato", label: "Extrato bancário", hint: "PDF dos últimos 90 dias", group: "banco" },
-  { id: "contratos", label: "Contratos de serviço", hint: "Opcional — reforça sua carteira de clientes", group: "obra" },
+  { id: "contratos", label: "Comprovante de faturamento", hint: "Nota fiscal, recibo ou contrato de serviço", group: "movimento" },
 ];
 
 export const CONTA_DOC_IDS = DOC_TYPES.filter((d) => d.group === "conta").map((d) => d.id);
@@ -211,6 +191,12 @@ export type ScoreResult = {
 const SCORE_FLOOR = 300;
 const SCORE_RANGE = 700;
 
+/**
+ * Saturação do faturamento mensal usada na calibragem do score.
+ * Representa o nível em que o fator "movimento" atinge peso máximo.
+ */
+export const REVENUE_SATURATION = 8000;
+
 export type ScoreInput = {
   persona: Persona;
   formalized: boolean; // possui/possuirá CNPJ
@@ -221,17 +207,33 @@ export type ScoreInput = {
   requestedAmount?: number | null;
 };
 
+/**
+ * Score "2ª camada": modelo alternativo próprio, calibrado pela realidade do
+ * trabalho informal. Fatores: faturamento/movimento + dados bancários +
+ * contas em dia + formalização + experiência. Range 300–1000.
+ *
+ * NÃO é o score Serasa/SPC; é a camada de avaliação complementar que,
+ * junto com o aval do FAMPE/Sebrae, destrava o crédito para quem o banco
+ * sempre negou.
+ */
 export function computeScore({ persona, formalized, uploaded }: ScoreInput): ScoreResult {
-  const pipeline = pipelineTotal(persona);
   const contasUp = CONTA_DOC_IDS.filter((id) => uploaded.includes(id)).length;
   const hasExtrato = uploaded.includes("extrato");
+  const hasFaturamento = uploaded.includes("contratos");
+
+  // Força do faturamento: satura em REVENUE_SATURATION (teto do score deste fator).
+  const revenueStrength = Math.min(persona.monthlyRevenue / REVENUE_SATURATION, 1);
+  // Boost adicional se comprovante de faturamento foi enviado.
+  const movimentoStrength = Math.min(revenueStrength + (hasFaturamento ? 0.15 : 0), 1);
 
   const weights = [
     {
-      label: "Agenda de trabalhos futuros",
+      label: "Movimento do seu trabalho",
       weight: 0.32,
-      strength: Math.min(pipeline / PIPELINE_SATURATION, 1),
-      explanation: `${formatBRL(pipeline)} em trabalhos confirmados e previstos — recebíveis futuros que servem de garantia.`,
+      strength: movimentoStrength,
+      explanation: hasFaturamento
+        ? `Faturamento de ${formatBRL(persona.monthlyRevenue)}/mês comprovado — movimento real do negócio.`
+        : `Faturamento declarado de ${formatBRL(persona.monthlyRevenue)}/mês — envie um comprovante para reforçar.`,
     },
     {
       label: "Formalização (CNPJ ativo)",
@@ -287,26 +289,20 @@ export function computeScore({ persona, formalized, uploaded }: ScoreInput): Sco
   return { score, ratingLabel, ratingTone, factors };
 }
 
-/* -------------------------- crédito pré-aprovado -------------------------- */
+/* -------------------------- estimativa de crédito ------------------------- */
 
-export type CreditOffer = {
-  monthly: number;
-  guaranteeMonths: number;
-  guaranteedReceivables: number;
-  amount: number; // capital de giro pré-aprovado
-  monthlyRate: number; // % a.m.
-};
-
-/** Antecipação de recebíveis das obras: parte da carteira futura vira limite. */
-export function computeCredit(input: ScoreInput): CreditOffer {
+/**
+ * Estimativa de capital de giro elegível com base no score e no faturamento.
+ * A garantia real da operação é o aval do FAMPE/Sebrae (até 80%) — não os
+ * recebíveis futuros. Esta função calibra apenas o limite indicativo.
+ */
+export function computeCredit(input: ScoreInput): { amount: number; monthlyRate: number } {
   const { score } = computeScore(input);
-  const monthly = projectedMonthly(input.persona);
-  const guaranteeMonths = 12;
-  const guaranteedReceivables = monthly * guaranteeMonths;
-  const ltv = score >= 800 ? 0.6 : score >= 680 ? 0.45 : 0.3;
-  const amount = Math.round((guaranteedReceivables * ltv) / 100) * 100;
+  // LTV sobre a capacidade anual: score alto destrava mais meses de faturamento.
+  const coverMonths = score >= 800 ? 6 : score >= 680 ? 4 : 2.5;
+  const amount = Math.round((input.persona.monthlyRevenue * coverMonths) / 100) * 100;
   const monthlyRate = score >= 800 ? 2.4 : score >= 680 ? 3.3 : 4.6;
-  return { monthly, guaranteeMonths, guaranteedReceivables, amount, monthlyRate };
+  return { amount, monthlyRate };
 }
 
 /* ----------------------------- parceiros ---------------------------------- */

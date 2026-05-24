@@ -11,7 +11,6 @@ import {
   ScoreInput,
   computeScore,
   computeCredit,
-  HORIZON_MONTHS,
 } from "./data";
 
 /* ----------------------------- documentos --------------------------------- */
@@ -445,15 +444,15 @@ function buildFactors(
     fValor = 1 - clamp(Math.abs(amount - mid) / mid, 0, 1);
   }
 
-  const horizonObras = HORIZON_MONTHS;
-  const fPrazo = line.termMax >= horizonObras ? 1 : 0.6;
+  const targetTerm = 12; // prazo-alvo do capital de giro (meses)
+  const fPrazo = line.termMax >= targetTerm ? 1 : 0.6;
 
   const factors: MatchFactor[] = [
     { key: "score", label: FACTOR_LABELS.score, value0a1: fScore, explanation: `Score ${score} de 1000 — peso ${Math.round(w.score * 100)}% nesta linha.` },
     { key: "docs", label: FACTOR_LABELS.docs, value0a1: fDocs, explanation: missing.length ? `Faltam ${missing.length} documento(s) obrigatório(s).` : "Documentos obrigatórios completos." },
     { key: "custo", label: FACTOR_LABELS.custo, value0a1: fCusto, explanation: `CET de ${cetAA.toLocaleString("pt-BR")}% a.a. comparado às outras linhas.` },
     { key: "valor", label: FACTOR_LABELS.valor, value0a1: fValor, explanation: `Limite de ${amount.toLocaleString("pt-BR")} dentro da faixa da linha.` },
-    { key: "prazo", label: FACTOR_LABELS.prazo, value0a1: fPrazo, explanation: line.termMax >= horizonObras ? "Prazo cobre o horizonte da sua agenda." : "Prazo mais curto que o horizonte da sua agenda." },
+    { key: "prazo", label: FACTOR_LABELS.prazo, value0a1: fPrazo, explanation: line.termMax >= targetTerm ? "Prazo confortável para o capital de giro." : "Prazo mais curto que o ideal para o giro." },
   ];
 
   const sum =
