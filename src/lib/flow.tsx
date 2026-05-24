@@ -46,12 +46,10 @@ type FlowState = {
   selectedLineId: string | null;
   selectLine: (id: string) => void;
 
+  /** Produto é capital de giro — finalidade não é coletada (sempre null). */
   purpose: CreditPurpose | null;
-  setPurpose: (p: CreditPurpose) => void;
   requestedAmount: number | null;
   setRequestedAmount: (v: number) => void;
-  goalFilterOn: boolean;
-  toggleGoalFilter: () => void;
 
   contract: Contract | null;
   requestCredit: (lineId: string) => void;
@@ -73,9 +71,7 @@ export function FlowProvider({ children }: { children: ReactNode }) {
   const [createdCNPJ, setCreatedCNPJ] = useState<string | null>(null);
   const [uploaded, setUploaded] = useState<string[]>([]);
   const [selectedLineId, setSelectedLineId] = useState<string | null>(null);
-  const [purpose, setPurposeState] = useState<CreditPurpose | null>(null);
   const [requestedAmount, setRequestedAmountState] = useState<number | null>(null);
-  const [goalFilterOn, setGoalFilterOn] = useState(false);
   const [contract, setContract] = useState<Contract | null>(null);
 
   const value = useMemo<FlowState>(() => {
@@ -119,12 +115,9 @@ export function FlowProvider({ children }: { children: ReactNode }) {
       selectedLineId,
       selectLine: (id: string) => setSelectedLineId(id),
 
-      purpose,
-      setPurpose: (p: CreditPurpose) => setPurposeState(p),
+      purpose: null,
       requestedAmount,
       setRequestedAmount: (v: number) => setRequestedAmountState(v),
-      goalFilterOn,
-      toggleGoalFilter: () => setGoalFilterOn((on) => !on),
 
       contract,
       requestCredit: (lineId: string) => {
@@ -134,7 +127,7 @@ export function FlowProvider({ children }: { children: ReactNode }) {
           persona,
           formalized,
           uploaded,
-          purpose,
+          purpose: null,
           requestedAmount,
         });
         setSelectedLineId(lineId);
@@ -182,9 +175,7 @@ export function FlowProvider({ children }: { children: ReactNode }) {
         setCreatedCNPJ(null);
         setUploaded([]);
         setSelectedLineId(null);
-        setPurposeState(null);
         setRequestedAmountState(null);
-        setGoalFilterOn(false);
         setContract(null);
       },
     };
@@ -196,9 +187,7 @@ export function FlowProvider({ children }: { children: ReactNode }) {
     createdCNPJ,
     uploaded,
     selectedLineId,
-    purpose,
     requestedAmount,
-    goalFilterOn,
     contract,
   ]);
 

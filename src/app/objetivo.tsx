@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 
 import { useFlow } from "@/lib/flow";
 import { computeCredit, formatBRL } from "@/lib/data";
-import { CREDIT_PURPOSES, CreditPurpose } from "@/lib/credit";
 import {
   Screen,
   TopBar,
@@ -25,17 +24,9 @@ const MIN = 1000;
 const MAX = 60000;
 const STEP = 1000;
 
-export default function ObjetivoScreen() {
+export default function ValorScreen() {
   const router = useRouter();
-  const {
-    persona,
-    formalized,
-    uploaded,
-    purpose,
-    setPurpose,
-    requestedAmount,
-    setRequestedAmount,
-  } = useFlow();
+  const { persona, formalized, uploaded, requestedAmount, setRequestedAmount } = useFlow();
 
   const defaultAmount = useMemo(
     () => computeCredit({ persona, formalized, uploaded }).amount,
@@ -52,36 +43,15 @@ export default function ObjetivoScreen() {
       <TopBar step={5} total={7} />
 
       <View style={{ gap: S.sm, marginTop: S.md }}>
-        <Title>Para que você quer o crédito?</Title>
+        <Title>Quanto de capital de giro você precisa?</Title>
         <Body>
-          Escolha o seu objetivo. Vamos priorizar as linhas que mais combinam com ele — sem esconder
-          as outras.
+          Defina o valor que faz sentido para o seu negócio agora. Você ajusta quando quiser — e só
+          contrata depois de ver o custo completo.
         </Body>
       </View>
 
-      <View style={os.grid}>
-        {CREDIT_PURPOSES.map((p) => {
-          const selected = purpose === p.id;
-          return (
-            <Pressable
-              key={p.id}
-              onPress={() => setPurpose(p.id as CreditPurpose)}
-              style={os.cell}
-            >
-              <Card
-                tone={selected ? "highlight" : "default"}
-                style={{ flex: 1, gap: 6, alignItems: "flex-start", minHeight: 96 }}
-              >
-                <Text style={os.emoji}>{p.icon}</Text>
-                <Text style={[os.purposeLabel, selected && { color: C.accent }]}>{p.label}</Text>
-              </Card>
-            </Pressable>
-          );
-        })}
-      </View>
-
       <View style={{ gap: S.sm }}>
-        <Label>Quanto você precisa?</Label>
+        <Label>Valor do capital de giro</Label>
         <Card style={{ gap: S.md }}>
           <Text style={[os.amount, numStyle]}>{formatBRL(amount)}</Text>
 
@@ -106,9 +76,16 @@ export default function ObjetivoScreen() {
         </Card>
       </View>
 
+      <Card style={{ borderColor: C.brand }}>
+        <Muted style={{ fontWeight: "700", color: C.text }}>É capital de giro</Muted>
+        <Body>
+          O crédito entra no caixa do seu negócio — estoque, insumos, contas do mês, o que precisar.
+          Sem amarra de finalidade.
+        </Body>
+      </Card>
+
       <Btn
         label="Continuar"
-        disabled={purpose == null}
         onPress={() => {
           if (requestedAmount == null) setRequestedAmount(amount);
           router.push("/score");
@@ -119,10 +96,6 @@ export default function ObjetivoScreen() {
 }
 
 const os = StyleSheet.create({
-  grid: { flexDirection: "row", flexWrap: "wrap", gap: S.sm },
-  cell: { width: "48%", flexGrow: 1 },
-  emoji: { fontSize: 30 },
-  purposeLabel: { color: C.text, fontSize: 14, fontWeight: "700", lineHeight: 18 },
   amount: { color: C.text, fontSize: 30, fontWeight: "900", letterSpacing: -0.5 },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: S.sm },
   chip: {

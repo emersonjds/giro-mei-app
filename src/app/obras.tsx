@@ -43,7 +43,7 @@ export default function MovimentoScreen() {
         </Body>
       </Card>
 
-      <Btn label="Definir meu objetivo" onPress={() => router.push("/objetivo")} />
+      <Btn label="Continuar" onPress={() => router.push("/objetivo")} />
     </Screen>
   );
 }

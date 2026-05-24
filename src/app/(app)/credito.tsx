@@ -17,7 +17,6 @@ import {
   institutionFor,
   institutionForLineId,
   CREDIT_LINES,
-  CREDIT_PURPOSES,
   LineMatch,
   Contract,
   Installment,
@@ -53,12 +52,11 @@ export default function CreditoScreen() {
 /* =========================== VITRINE (sem contrato) ======================== */
 
 function Vitrine() {
-  const { persona, formalized, uploaded, purpose, requestedAmount, toggleDoc, goalFilterOn, toggleGoalFilter, setPurpose, requestCredit } =
-    useFlow();
+  const { persona, formalized, uploaded, requestedAmount, toggleDoc, requestCredit } = useFlow();
 
   const input = useMemo(
-    () => ({ persona, formalized, uploaded, purpose, requestedAmount }),
-    [persona, formalized, uploaded, purpose, requestedAmount],
+    () => ({ persona, formalized, uploaded, requestedAmount }),
+    [persona, formalized, uploaded, requestedAmount],
   );
 
   const ranked = useMemo(() => rankLines(input), [input]);
@@ -68,20 +66,12 @@ function Vitrine() {
 
   const best = bestLine(ranked);
   const cheapest = cheapestUnlocked(ranked);
-  const purposeMeta = purpose ? CREDIT_PURPOSES.find((p) => p.id === purpose) : null;
 
-  let forYou = ranked.filter((m) => m.status === "best" || m.status === "unlocked");
+  const forYou = ranked.filter((m) => m.status === "best" || m.status === "unlocked");
   const locked = ranked.filter((m) => m.status === "locked");
   const future = ranked.filter((m) => m.status === "future");
 
-  // Filtro duro por objetivo: esconde não-ideais entre as desbloqueadas.
-  let hiddenCount = 0;
-  if (goalFilterOn && purpose) {
-    const ideal = forYou.filter((m) => m.idealForGoal);
-    hiddenCount = forYou.length - ideal.length;
-    forYou = ideal;
-  }
-  const unlockedCount = ranked.filter((m) => m.status === "best" || m.status === "unlocked").length;
+  const unlockedCount = forYou.length;
 
   const [detailId, setDetailId] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
@@ -140,23 +130,6 @@ function Vitrine() {
         </Body>
       </View>
 
-      {purposeMeta ? (
-        <View style={ls.filterRow}>
-          <Pressable onPress={toggleGoalFilter} hitSlop={6}>
-            <View style={[ls.filterPill, goalFilterOn && ls.filterPillOn]}>
-              <Text style={[ls.filterTxt, goalFilterOn && { color: C.accent }]}>
-                {purposeMeta.icon} {purposeMeta.label} {goalFilterOn ? "✕" : ""}
-              </Text>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => goalFilterOn && toggleGoalFilter()} hitSlop={6}>
-            <View style={[ls.filterPill, !goalFilterOn && ls.filterPillOn]}>
-              <Text style={[ls.filterTxt, !goalFilterOn && { color: C.accent }]}>Mostrar todas</Text>
-            </View>
-          </Pressable>
-        </View>
-      ) : null}
-
       {forYou.length ? (
         <View style={{ gap: S.sm }}>
           <Label>Para você agora</Label>
@@ -169,13 +142,6 @@ function Vitrine() {
               onPrimary={() => (m.status === "best" ? openConfirm(m.line.id) : setDetailId(m.line.id))}
             />
           ))}
-          {hiddenCount > 0 ? (
-            <Pressable onPress={toggleGoalFilter} hitSlop={6}>
-              <Muted style={{ color: C.accent, fontWeight: "700" }}>
-                +{hiddenCount} linha{hiddenCount > 1 ? "s" : ""} oculta{hiddenCount > 1 ? "s" : ""} · mostrar todas
-              </Muted>
-            </Pressable>
-          ) : null}
         </View>
       ) : null}
 
@@ -242,8 +208,6 @@ function Vitrine() {
                   </Muted>
                 </View>
               </View>
-
-              {detail.idealForGoal ? <Pill tone="success">Ideal para seu objetivo</Pill> : null}
 
               <View style={ls.matchBig}>
                 <AiBadge label="Match calculado por IA" />
@@ -595,7 +559,6 @@ function LineCard({
         <View style={ls.badges}>
           {isBest ? <Pill tone="accent">Melhor para você</Pill> : null}
           {isCheapest ? <Pill tone="success">Menor custo</Pill> : null}
-          {m.idealForGoal ? <Pill tone="success">Ideal para seu objetivo</Pill> : null}
         </View>
       </View>
 
@@ -762,18 +725,6 @@ const ls = StyleSheet.create({
   amount: { color: C.text, fontSize: 24, fontWeight: "900", fontVariant: ["tabular-nums"] },
   rate: { color: C.text, fontSize: 16, fontWeight: "800", fontVariant: ["tabular-nums"] },
   delta: { color: C.accent, fontSize: 15, fontWeight: "900" },
-  filterRow: { flexDirection: "row", flexWrap: "wrap", gap: S.sm },
-  filterPill: {
-    borderColor: C.border,
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    minHeight: 36,
-    justifyContent: "center",
-  },
-  filterPillOn: { borderColor: C.accent, backgroundColor: C.accentSoft },
-  filterTxt: { color: C.text, fontSize: 13, fontWeight: "700" },
   lock: { width: 22, height: 24, alignItems: "center", justifyContent: "flex-end" },
   lockBody: { width: 18, height: 13, borderRadius: 3, backgroundColor: C.faint },
   lockShackle: {
