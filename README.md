@@ -1,6 +1,10 @@
-# Giro MEI
+<p align="center">
+  <img src="assets/images/giromei-logo.png" alt="Giromei" width="160" />
+</p>
 
-**Capital de giro para quem o banco não enxerga.**
+<h1 align="center">Giromei</h1>
+
+<p align="center"><strong>Capital de giro para quem o banco não enxerga.</strong></p>
 
 Giro MEI é um app que ajuda microempreendedores informais a saírem da
 informalidade, montarem um histórico e destravarem crédito justo. A ideia
