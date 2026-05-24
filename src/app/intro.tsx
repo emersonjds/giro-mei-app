@@ -2,7 +2,7 @@ import { View, StyleSheet, Text, TextInput, ScrollView, Pressable } from "react-
 import { useRouter } from "expo-router";
 
 import { useFlow } from "@/lib/flow";
-import { formatBRL, pipelineTotal } from "@/lib/data";
+import { formatBRL } from "@/lib/data";
 import {
   Screen,
   TopBar,
@@ -39,7 +39,7 @@ function getInitials(name: string): string {
 
 export default function IntroScreen() {
   const router = useRouter();
-  const { persona, trade, setTrade } = useFlow();
+  const { persona, trade, setTrade, monthlyRevenue } = useFlow();
 
   return (
     <Screen>
@@ -47,20 +47,20 @@ export default function IntroScreen() {
 
       <View style={{ gap: S.sm, marginTop: S.md }}>
         <Pill>Não somos um banco — somos a ponte</Pill>
-        <Title>Tiramos você da informalidade e te levamos ao crédito.</Title>
+        <Title>Capital de giro para quem o banco não enxerga.</Title>
         <Body>
-          Milhões de autônomos trabalham, faturam e pagam contas — mas o banco diz não, porque não
-          há CNPJ nem comprovação formal. A gente formaliza, monta seu histórico e usa sua agenda
-          futura como garantia. Aí o crédito chega.
+          Milhões de autônomos trabalham, faturam e pagam contas — mas o banco diz não, por falta de
+          histórico e de garantia. A gente resolve as duas: um score que enxerga o seu trabalho e o
+          aval do Sebrae (FAMPE), que garante até 80%. Aí o crédito chega.
         </Body>
       </View>
 
       <Card>
         <Muted style={{ fontWeight: "700", color: C.text }}>Como funciona</Muted>
         <Step n="1" t="Seu CPF" d="Buscamos se você já tem um CNPJ — se não, criamos seu MEI." />
-        <Step n="2" t="Seus documentos" d="Água, luz, telefone, aluguel e extrato bancário." />
-        <Step n="3" t="Sua agenda" d="Projetamos sua renda dos próximos 18 meses." />
-        <Step n="4" t="Seu score" d="E acionamos os parceiros bancários por você." />
+        <Step n="2" t="Seu movimento" d="Seu faturamento e seus documentos mostram o seu negócio." />
+        <Step n="3" t="Seu score" d="A 2ª camada que enxerga o seu trabalho, não só o bureau." />
+        <Step n="4" t="Aval do Sebrae" d="O FAMPE garante até 80% e o crédito é liberado." />
       </Card>
 
       <Card style={{ borderColor: C.white }}>
@@ -75,7 +75,7 @@ export default function IntroScreen() {
             placeholderTextColor={C.faint}
             style={st.tradeInput}
           />
-          <Muted>Funciona para qualquer profissão — nesta demo, focamos em trancistas.</Muted>
+          <Muted>Funciona para qualquer MEI — escolha ou digite a sua profissão.</Muted>
         </View>
 
         <ScrollView
@@ -111,8 +111,8 @@ export default function IntroScreen() {
           <View style={{ flex: 1 }}>
             <Body>
               {persona.name}, {persona.trade.toLowerCase()} há {persona.yearsInTrade} anos em{" "}
-              {persona.location}. Hoje invisível para o banco — mas com{" "}
-              {formatBRL(pipelineTotal(persona))} em trabalhos já no horizonte.
+              {persona.location}. Hoje invisível para o banco — mas faturando cerca de{" "}
+              {formatBRL(monthlyRevenue)} por mês.
             </Body>
           </View>
         </View>
@@ -200,7 +200,7 @@ const st = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 999,
-    backgroundColor: "#6B21A8",
+    backgroundColor: C.brand,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,

@@ -10,7 +10,7 @@ import { Screen, Brand, Title, Body, Muted, Label, Card, Btn, C, S } from "@/lib
 const GROUPS: { key: DocType["group"]; label: string }[] = [
   { key: "conta", label: "Contas em dia" },
   { key: "banco", label: "Banco" },
-  { key: "obra", label: "Agenda" },
+  { key: "movimento", label: "Movimento / faturamento" },
   { key: "fiscal", label: "Fiscal (MEI)" },
 ];
 

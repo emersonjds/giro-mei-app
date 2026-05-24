@@ -11,7 +11,7 @@ import { Screen, TopBar, Title, Body, Muted, Card, Btn, C, S } from "@/lib/ui";
 const GROUPS: { key: DocType["group"]; label: string }[] = [
   { key: "conta", label: "Contas em dia" },
   { key: "banco", label: "Banco" },
-  { key: "obra", label: "Agenda" },
+  { key: "movimento", label: "Movimento / faturamento" },
   { key: "fiscal", label: "Fiscal (MEI)" },
 ];
 
@@ -100,7 +100,7 @@ export default function DocumentosScreen() {
 
       <View style={{ gap: S.sm }}>
         <Btn
-          label={sent > 0 ? "Ver minhas linhas de crédito" : "Pular por enquanto"}
+          label={sent > 0 ? "Continuar" : "Pular por enquanto"}
           onPress={() => router.push("/obras")}
           variant={sent > 0 ? "primary" : "ghost"}
         />
