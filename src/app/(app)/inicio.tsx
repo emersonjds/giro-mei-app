@@ -3,12 +3,7 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 
 import { useFlow } from "@/lib/flow";
-import {
-  computeScore,
-  computeCredit,
-  formatBRL,
-  obraMonthly,
-} from "@/lib/data";
+import { computeScore, computeCredit, formatBRL } from "@/lib/data";
 import {
   rankLines,
   bestLine,
@@ -51,7 +46,7 @@ const STATUS_LABEL: Record<Contract["status"], string> = {
 
 export default function InicioScreen() {
   const router = useRouter();
-  const { persona, formalized, uploaded, purpose, requestedAmount, contract } = useFlow();
+  const { persona, formalized, uploaded, purpose, requestedAmount, contract, monthlyRevenue } = useFlow();
 
   const input = useMemo(
     () => ({ persona, formalized, uploaded, purpose, requestedAmount }),
@@ -124,7 +119,7 @@ export default function InicioScreen() {
         </Card>
       ) : (
         <Card tone="highlight" style={{ gap: S.sm }}>
-          <Label>Crédito pré-aprovado</Label>
+          <Label>Crédito estimado</Label>
           <Text style={[hs.bigMoney, numStyle]}>{formatBRL(credit.amount)}</Text>
           {best ? <Muted>Melhor linha para você: {best.line.name}</Muted> : null}
           <Btn label="Ver minhas linhas" variant="accent" onPress={() => router.push("/credito")} />
@@ -153,21 +148,17 @@ export default function InicioScreen() {
 
       <View style={{ gap: S.sm }}>
         <View style={hs.cardHead}>
-          <Label>Próximas entradas</Label>
+          <Label>Seu movimento</Label>
           <Pressable onPress={() => router.push("/entradas")} hitSlop={8}>
-            <Text style={hs.link}>Ver todas</Text>
+            <Text style={hs.link}>Ver mais</Text>
           </Pressable>
         </View>
-        <Card style={{ gap: S.sm }}>
-          {persona.obras.slice(0, 3).map((o) => (
-            <View key={o.id} style={hs.obraRow}>
-              <View style={{ flex: 1 }}>
-                <Text style={hs.obraTitle}>{o.titulo}</Text>
-                <Muted>{o.inicio}</Muted>
-              </View>
-              <Text style={[hs.obraVal, numStyle]}>{formatBRL(obraMonthly(o))}/mês</Text>
-            </View>
-          ))}
+        <Card style={hs.cardHead}>
+          <View style={{ flex: 1 }}>
+            <Text style={hs.obraTitle}>Faturamento médio</Text>
+            <Muted>por mês</Muted>
+          </View>
+          <Text style={[hs.obraVal, numStyle, { fontSize: 18 }]}>{formatBRL(monthlyRevenue)}</Text>
         </Card>
       </View>
 

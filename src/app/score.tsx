@@ -20,7 +20,10 @@ export default function ScoreScreen() {
 
       <View style={{ gap: S.sm, marginTop: S.md }}>
         <Title>O score de {persona.name}</Title>
-        <Body>Calculado a partir da formalização, dos documentos e da sua agenda de trabalhos — e totalmente explicável.</Body>
+        <Body>
+          A nossa 2ª camada de análise: um score próprio que enxerga o seu trabalho — diferente do
+          score tradicional do banco. E totalmente explicável.
+        </Body>
       </View>
 
       <Card style={{ alignItems: "center", gap: S.md, paddingVertical: S.lg }}>
@@ -36,13 +39,21 @@ export default function ScoreScreen() {
         </View>
       </Card>
 
-      <Card style={{ borderColor: C.white, gap: S.sm }}>
-        <Muted style={{ fontWeight: "700", color: C.text }}>Crédito pré-aprovado</Muted>
-        <Text style={ss.credit}>{formatBRL(credit.amount)}</Text>
+      <Card tone="highlight" style={{ gap: S.sm }}>
+        <Muted style={{ fontWeight: "700", color: C.text }}>A dupla validação</Muted>
+        <Body>
+          Seu score mostra que você pode pagar. O aval do Sebrae (FAMPE) garante até 80% da
+          operação. Juntos, destravam o crédito que o banco sempre negou.
+        </Body>
+      </Card>
+
+      <Card style={{ borderColor: C.brand, gap: S.sm }}>
+        <Muted style={{ fontWeight: "700", color: C.text }}>Crédito estimado</Muted>
+        <Text style={ss.credit}>até {formatBRL(credit.amount)}</Text>
         <Muted>
-          Capital de giro por antecipação de recebíveis — garantido por {credit.guaranteeMonths} meses
-          da sua agenda ({formatBRL(credit.guaranteedReceivables)}). Taxa a partir de{" "}
-          {credit.monthlyRate.toLocaleString("pt-BR")}% a.m.
+          Capital de giro com aval do FAMPE, a partir de{" "}
+          {credit.monthlyRate.toLocaleString("pt-BR")}% a.m. A decisão final é da instituição
+          parceira.
         </Muted>
       </Card>
 
@@ -66,8 +77,8 @@ export default function ScoreScreen() {
 }
 
 const ss = StyleSheet.create({
-  score: { color: C.text, fontSize: 64, fontWeight: "900", letterSpacing: -2 },
-  credit: { color: C.text, fontSize: 34, fontWeight: "900" },
+  score: { color: C.gold, fontSize: 64, fontWeight: "900", letterSpacing: -2 },
+  credit: { color: C.gold, fontSize: 34, fontWeight: "900" },
   scaleRow: { flexDirection: "row", justifyContent: "space-between" },
   facHead: { flexDirection: "row", alignItems: "center", gap: S.sm },
 });
